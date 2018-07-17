@@ -10,13 +10,17 @@ import java.util.List;
 
 public class Projectile extends Entity {
 
+    private final static float PVELOCITY = 5;
+    private final static float MOVEFACTOR = 0.9f;
+
     private Player owner;
     private boolean alive;
 
     public Projectile(float xpos, float ypos, float velocity, float angle, Player p){
         super((int)xpos, (int)ypos);
-        this.xvel = Physics.xComponent(velocity, Physics.toRadiians(angle));
-        this.yvel = Physics.yComponent(velocity, Physics.toRadiians(angle));
+        float pvel = velocity * MOVEFACTOR + PVELOCITY;
+        this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
+        this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
         this.angle = angle;
         this.width = 10;
         this.height = 30;
@@ -35,7 +39,6 @@ public class Projectile extends Entity {
         Physics.checkBoxCollision(this, 0, 0, Settings.getWindowWidth(), Settings.getWindowHeight(), time, tempCollision);
         if(tempCollision.t < earliestCollision.t){
             alive = false;
-            System.out.println(tempCollision.t);
             return time;
         }
         for(ICollidable o: obstacles){
@@ -45,7 +48,6 @@ public class Projectile extends Entity {
             Physics.checkObstacleCollision(this, o, time, tempCollision);
             if(tempCollision.t < earliestCollision.t){
                 alive = false;
-                System.out.println(tempCollision.t);
                 return time;
             }
         }
@@ -54,9 +56,11 @@ public class Projectile extends Entity {
 
     @Override
     public void draw() {
-        boundingBox.setTranslateX(xpos);
-        boundingBox.setTranslateY(ypos);
-        boundingBox.setRotate(angle);
+        if(alive) {
+            boundingBox.setTranslateX(xpos);
+            boundingBox.setTranslateY(ypos);
+            boundingBox.setRotate(angle);
+        }
     }
 
     @Override
