@@ -17,7 +17,22 @@ public class Projectile extends Entity {
     private boolean alive;
 
     public Projectile(Player p){
-        super((int)p.getX(), (int)p.getY());
+        super("Proj-" + System.currentTimeMillis(), (int)p.getX(), (int)p.getY());
+        float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
+        this.angle = p.getAngle();
+        this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
+        this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
+
+        this.width = 10;
+        this.height = 30;
+        this.owner = p;
+        boundingBox = new Rectangle(width, height);
+
+        alive = true;
+    }
+
+    public Projectile(String ID, Player p){
+        super(ID, (int)p.getX(), (int)p.getY());
         float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
         this.angle = p.getAngle();
         this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));

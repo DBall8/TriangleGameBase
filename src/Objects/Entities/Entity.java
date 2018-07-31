@@ -11,6 +11,9 @@ import java.util.List;
 
 
 public abstract class Entity {
+
+    private String ID;
+
     protected float xpos, ypos;
     protected float angle;
     protected float xvel, yvel;
@@ -21,7 +24,8 @@ public abstract class Entity {
     protected Collision tempCollision = new Collision();
     protected Collision earliestCollision = new Collision();
 
-    public Entity(int x, int y){
+    public Entity(String id, int x, int y){
+        this.ID = id;
         this.xpos = x;
         this.ypos = y;
         reset();
@@ -88,6 +92,7 @@ public abstract class Entity {
 
     public abstract Node getVisuals();
 
+    public String getID(){ return ID; }
     public float getX(){ return xpos; }
     public float getY(){ return ypos; }
     public float getAngle(){ return angle; }

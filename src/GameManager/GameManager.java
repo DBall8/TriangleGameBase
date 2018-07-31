@@ -1,6 +1,5 @@
 package GameManager;
 
-import Ability.PrimaryFire;
 import Global.Settings;
 import Objects.Entities.Entity;
 import Objects.Entities.Player;
@@ -36,7 +35,7 @@ public class GameManager extends Pane {
 
     public void start(Scene scene){
         this.scene = scene;
-        Player p = new Player(50, 50);
+        Player p = new Player("Ply-1", 50, 50);
         p.initializeAsPlayer1(scene, new FireEventHandler() {
             @Override
             public void handle(FireEvent fe) {
@@ -45,6 +44,7 @@ public class GameManager extends Pane {
             }
         });
         addPlayer(p);
+        addPlayer(new Player ("Ply2", 750, 750));
         addObstacle(375, 200, 50, 400);
         addObstacle(200, 375, 400, 50);
         time.play();

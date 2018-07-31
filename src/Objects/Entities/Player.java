@@ -26,8 +26,8 @@ public class Player extends Entity implements ICollidable {
 
     private Ability primaryFire;
 
-    public Player(int x, int y){
-        super(x, y);
+    public Player(String ID, int x, int y){
+        super(ID, x, y);
         angle = 0;
         xvel = 20;
         yvel = 20;
