@@ -11,15 +11,13 @@ import Objects.Obstacle;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class GameManager extends Pane {
 
     private Scene scene;
-    private List<Entity> entities = new ArrayList<>();
-    private List<Projectile> projectiles = new ArrayList<>();
+    private HashMap<String,Entity> entities = new HashMap<>();
+    private HashMap<String, Projectile> projectiles = new HashMap<>();
     private List<Projectile> fireQueue = new ArrayList<>();
     private List<ICollidable> obstacles = new ArrayList<>();
     private int width, height;
@@ -51,24 +49,30 @@ public class GameManager extends Pane {
     }
 
     public void draw(){
-        for(Entity e: entities){
+        Iterator it = entities.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.draw();
         }
     }
 
     private void update(){
-        for(Entity e: entities){
+        Iterator it = entities.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.update();
         }
-        Iterator it = fireQueue.iterator();
+
+        // Add projectiles from queue
+        it = fireQueue.iterator();
         while(it.hasNext()){
             Projectile p = (Projectile)it.next();
             addProjectile(p);
             it.remove();
         }
-        it = projectiles.iterator();
+        it = projectiles.entrySet().iterator();
         while(it.hasNext()){
-            Projectile p = (Projectile)it.next();
+            Projectile p = (Projectile) ((Map.Entry)it.next()).getValue();
             if(!p.isAlive()){
                 it.remove();
                 removeEntity(p);
@@ -80,23 +84,29 @@ public class GameManager extends Pane {
         float firstCollisionTime = timeLeft; // looks for first collision
         float tempTime;
         // reset collisions for each player
-        for(Entity e: entities){
+        Iterator it = entities.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.reset();
             if((tempTime = e.checkCollisions(timeLeft, obstacles)) < firstCollisionTime){
                 firstCollisionTime = tempTime;
             }
         }
+
         return firstCollisionTime;
     }
 
     private void move(float time){
-        for(Entity e: entities){
+
+        Iterator it = entities.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.move(time);
         }
     }
 
 
-    public void calculateFrame(){
+    protected void calculateFrame(){
         float timeLeft = 1.00f;
         float firstCollisionTime;
         update();
@@ -112,24 +122,40 @@ public class GameManager extends Pane {
         }while(timeLeft > 0.01f);
     }
 
-    private void addPlayer(Player p){
+    public void addPlayer(Player p){
         addEntity(p);
         obstacles.add(p);
     }
 
-    private void addProjectile(Projectile p){
+    public void addProjectile(Projectile p){
         addEntity(p);
-        projectiles.add(p);
+        projectiles.put(p.getID(), p);
     }
 
-    private void addEntity(Entity e){
-        entities.add(e);
+    public void addEntity(Entity e){
+        entities.put(e.getID(), e);
         this.getChildren().add(e.getVisuals());
     }
 
-    private void removeEntity(Entity e){
-        entities.remove(e);
+    public void removeEntity(Entity e){
+        entities.remove(e.getID());
         this.getChildren().remove(e.getVisuals());
+    }
+
+    public Entity getEntity(String id){
+        if(entities.containsKey(id)){
+            return entities.get(id);
+        }
+        else{
+            System.err.println("Entity with id " + id + " does not exist.");
+            return null;
+        }
+    }
+
+    public void updateEntity(String ID, float x, float y, float xvel, float yvel, float angle){
+        if(entities.containsKey(ID)){
+            entities.get(ID).updateState(x, y, xvel, yvel, angle);
+        }
     }
 
     private void addObstacle(int xpos, int ypos, int width, int height){

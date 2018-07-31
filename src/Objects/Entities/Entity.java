@@ -90,6 +90,14 @@ public abstract class Entity {
         tempCollision.reset();
     }
 
+    public void updateState(float x, float y, float xvel, float yvel, float angle){
+        this.xpos = x;
+        this.ypos = y;
+        this.xvel = xvel;
+        this.yvel = yvel;
+        this.angle = angle;
+    }
+
     public abstract Node getVisuals();
 
     public String getID(){ return ID; }
