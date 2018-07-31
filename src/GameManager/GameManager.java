@@ -44,8 +44,9 @@ public class GameManager extends Pane {
                 fireQueue.add(fe.projectile);
             }
         });
-        addEntity(p);
-        obstacles.add(p);
+        Player p2 = new Player(90, 90);
+        addPlayer(p);
+        addPlayer(p2);
         addObstacle(375, 200, 50, 400);
         addObstacle(200, 375, 400, 50);
         time.play();
@@ -111,6 +112,11 @@ public class GameManager extends Pane {
             timeLeft -= firstCollisionTime;
 
         }while(timeLeft > 0.01f);
+    }
+
+    private void addPlayer(Player p){
+        addEntity(p);
+        obstacles.add(p);
     }
 
     private void addProjectile(Projectile p){

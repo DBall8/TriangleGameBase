@@ -1,21 +1,30 @@
 package Objects.Entities;
 
+import Ability.Ability;
+import Ability.PrimaryFire;
 import Objects.FireEvent.FireEvent;
 import Objects.FireEvent.FireEventHandler;
 import Physics.Physics;
 import GameManager.UserInputListener;
 import Objects.ICollidable;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 
 public class Player extends Entity implements ICollidable {
 
     private Polygon body;
+    private Rotate r;
     private UserInputListener input;
 
     private FireEventHandler feHandler;
+
+    private Rectangle debug;
+
+    private Ability primaryFire;
 
     public Player(int x, int y){
         super(x, y);
@@ -33,6 +42,18 @@ public class Player extends Entity implements ICollidable {
         });
         body.setFill(Color.GREEN);
         boundingBox = new Rectangle(width, height);
+
+        r = new Rotate();
+        r.setPivotX(width/2);
+        r.setPivotY(height/2);
+
+        body.getTransforms().add(r);
+
+        primaryFire = new PrimaryFire();
+//
+//        debug = new Rectangle(1, 1);
+//        debug.setFill(Color.TRANSPARENT);
+//        debug.setStroke(Color.BLUE);
     }
 
     public void setInputListener(UserInputListener input){
@@ -41,6 +62,10 @@ public class Player extends Entity implements ICollidable {
 
     @Override
     public void update(){
+
+        if(input == null){
+            return;
+        }
 
         float velocity = (float)Math.sqrt((xvel*xvel) + (yvel * yvel));
 
@@ -67,40 +92,36 @@ public class Player extends Entity implements ICollidable {
 
         // Move
 
-//        if(test < 90 && test > -90) {
-//            if(input.isBoost()){
-//                velocity = (float) (velocity * ((180 - (Math.abs(test)))/ 180));
-//            }
-//            else{
-//                velocity = (float) (velocity * ((90 - (Math.abs(test)))/ 90));
-//            }
-//
-//        }
-//        else
-//            velocity = 0;
-
-
-
-        if(input.isUp()){
-            if(velocity < 10 ){
-                velocity += 0.8;
-            }
-            else if(input.isBoost() && velocity < 20){
-                velocity += 1;
-            }
-
+        float distFromMouse = Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
+        if(distFromMouse < getXRadius()){
+            xvel = 0;
+            yvel = 0;
         }
-        if(input.isDown()  && velocity > -10){
-            velocity -= 0.8;
+        else {
+
+            if (input.isUp()) {
+                if (velocity < 10) {
+                    velocity += 0.8;
+                } else if (input.isBoost() && velocity < 20) {
+                    velocity += 1;
+                }
+
+            }
+            if (input.isDown() && velocity > -10) {
+                velocity -= 0.8;
+            }
+            //System.out.println(velocity);
+            float angleRads = Physics.toRadiians(angle);
+            xvel = Physics.xComponent(velocity, angleRads);
+            yvel = Physics.yComponent(velocity, angleRads);
         }
-        //System.out.println(velocity);
-        float angleRads = Physics.toRadiians(angle);
-        xvel = Physics.xComponent(velocity, angleRads);
-        yvel = Physics.yComponent(velocity, angleRads);
 
         // Fire
         if(input.isMouseDown()){
-            feHandler.handle(new FireEvent(new Projectile(xpos, ypos, velocity + 2, angle, this)));
+            if (primaryFire.use()) {
+                feHandler.handle(new FireEvent(new Projectile(xpos, ypos, velocity, angle, this)));
+            }
+
         }
 
     }
@@ -110,13 +131,22 @@ public class Player extends Entity implements ICollidable {
     }
 
     @Override
-    public Node getVisuals(){ return body; }
+    public Node getVisuals(){
+        Group g = new Group();
+        g.getChildren().addAll(body);
+        return g;
+    }
 
     @Override
     public void draw(){
         body.setTranslateX(xpos - getXRadius());
         body.setTranslateY(ypos - getYRadius());
-        body.setRotate(angle);
+        r.angleProperty().set(angle);
+
+//        debug.setTranslateX(xpos);
+//        debug.setTranslateY(ypos - getYRadius());
+//        debug.setWidth(getXRadius());
+//        debug.setHeight(getYRadius());
     }
 
     @Override
@@ -138,4 +168,21 @@ public class Player extends Entity implements ICollidable {
     public float topY() {
         return ypos - getYRadius();
     }
+
+//    @Override
+//    public float getXRadius(){
+//        float radiians = Physics.toRadiians(angle);
+//        float cos = (float)Math.cos(radiians);
+//        float sin = (float)Math.sin(radiians);
+//        return (width * cos * cos) + (height * sin * sin);
+//
+//    }
+//
+//    @Override
+//    public float getYRadius(){
+//        float radiians = Physics.toRadiians(angle);
+//        float cos = (float)Math.cos(radiians);
+//        float sin = (float)Math.sin(radiians);
+//        return (width * sin * sin) + (height * cos * cos);
+//    }
 }
