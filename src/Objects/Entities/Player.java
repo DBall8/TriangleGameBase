@@ -9,6 +9,7 @@ import GameManager.UserInputListener;
 import Objects.ICollidable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -19,8 +20,6 @@ public class Player extends Entity implements ICollidable {
     private Polygon body;
     private Rotate r;
     private UserInputListener input;
-
-    private FireEventHandler feHandler;
 
     private Rectangle debug;
 
@@ -48,16 +47,15 @@ public class Player extends Entity implements ICollidable {
         r.setPivotY(height/2);
 
         body.getTransforms().add(r);
-
-        primaryFire = new PrimaryFire();
 //
 //        debug = new Rectangle(1, 1);
 //        debug.setFill(Color.TRANSPARENT);
 //        debug.setStroke(Color.BLUE);
     }
 
-    public void setInputListener(UserInputListener input){
-        this.input = input;
+    public void initializeAsPlayer1(Scene scene, FireEventHandler feHandler){
+        input = new UserInputListener(scene);
+        primaryFire = new PrimaryFire(this, scene, feHandler);
     }
 
     @Override
@@ -67,7 +65,7 @@ public class Player extends Entity implements ICollidable {
             return;
         }
 
-        float velocity = (float)Math.sqrt((xvel*xvel) + (yvel * yvel));
+        float velocity = getVelocity();
 
         // Slow
 
@@ -116,18 +114,9 @@ public class Player extends Entity implements ICollidable {
             yvel = Physics.yComponent(velocity, angleRads);
         }
 
-        // Fire
-        if(input.isMouseDown()){
-            if (primaryFire.use()) {
-                feHandler.handle(new FireEvent(new Projectile(xpos, ypos, velocity, angle, this)));
-            }
+//        // Abilities
+        primaryFire.use();
 
-        }
-
-    }
-
-    public void addFireEventHandler(FireEventHandler feHandler){
-        this.feHandler = feHandler;
     }
 
     @Override

@@ -16,12 +16,13 @@ public class Projectile extends Entity {
     private Player owner;
     private boolean alive;
 
-    public Projectile(float xpos, float ypos, float velocity, float angle, Player p){
-        super((int)xpos, (int)ypos);
-        float pvel = velocity * MOVEFACTOR + PVELOCITY;
+    public Projectile(Player p){
+        super((int)p.getX(), (int)p.getY());
+        float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
+        this.angle = p.getAngle();
         this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
         this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
-        this.angle = angle;
+
         this.width = 10;
         this.height = 30;
         this.owner = p;
@@ -57,8 +58,8 @@ public class Projectile extends Entity {
     @Override
     public void draw() {
         if(alive) {
-            boundingBox.setTranslateX(xpos);
-            boundingBox.setTranslateY(ypos);
+            boundingBox.setTranslateX(xpos - getXRadius());
+            boundingBox.setTranslateY(ypos - getYRadius());
             boundingBox.setRotate(angle);
         }
     }
