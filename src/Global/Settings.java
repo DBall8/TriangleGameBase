@@ -7,6 +7,8 @@ public class Settings {
     private static int WIDTH = 800;
     private static int HEIGHT = 800;
 
+    private final static boolean DEBUG = false;
+
     private static class Settings_{
         private static final Settings instance = new Settings();
     }
@@ -20,4 +22,6 @@ public class Settings {
     public static int getFramerate(){ return FRAMERATE; }
     public static int getWindowWidth(){ return getInstance().WIDTH; }
     public static int getWindowHeight(){ return getInstance().HEIGHT; }
+
+    public static boolean isDebug(){ return getInstance().DEBUG; }
 }

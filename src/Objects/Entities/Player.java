@@ -2,6 +2,7 @@ package Objects.Entities;
 
 import Ability.Ability;
 import Ability.PrimaryFire;
+import Global.Settings;
 import Objects.FireEvent.FireEvent;
 import Objects.FireEvent.FireEventHandler;
 import Physics.Physics;
@@ -47,10 +48,12 @@ public class Player extends Entity implements ICollidable {
         r.setPivotY(height/2);
 
         body.getTransforms().add(r);
-//
-//        debug = new Rectangle(1, 1);
-//        debug.setFill(Color.TRANSPARENT);
-//        debug.setStroke(Color.BLUE);
+
+        if(Settings.isDebug()) {
+            debug = new Rectangle(1, 1);
+            debug.setFill(Color.TRANSPARENT);
+            debug.setStroke(Color.BLUE);
+        }
     }
 
     public void initializeAsPlayer1(Scene scene, FireEventHandler feHandler){
@@ -86,17 +89,10 @@ public class Player extends Entity implements ICollidable {
 
         angle += test;
 
-
-
         // Move
 
         float distFromMouse = Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
-        if(distFromMouse < getXRadius()){
-            xvel = 0;
-            yvel = 0;
-        }
-        else {
-
+        if(distFromMouse > getYRadius() * 1.5) {
             if (input.isUp()) {
                 if (velocity < 10) {
                     velocity += 0.8;
@@ -108,13 +104,14 @@ public class Player extends Entity implements ICollidable {
             if (input.isDown() && velocity > -10) {
                 velocity -= 0.8;
             }
-            //System.out.println(velocity);
-            float angleRads = Physics.toRadiians(angle);
-            xvel = Physics.xComponent(velocity, angleRads);
-            yvel = Physics.yComponent(velocity, angleRads);
         }
 
-//        // Abilities
+
+        float angleRads = Physics.toRadiians(angle);
+        xvel = Physics.xComponent(velocity, angleRads);
+        yvel = Physics.yComponent(velocity, angleRads);
+
+        // Abilities
         primaryFire.use();
 
     }
@@ -122,7 +119,10 @@ public class Player extends Entity implements ICollidable {
     @Override
     public Node getVisuals(){
         Group g = new Group();
-        g.getChildren().addAll(body);
+        g.getChildren().add(body);
+        if(Settings.isDebug()){
+            g.getChildren().add(debug);
+        }
         return g;
     }
 
@@ -132,10 +132,12 @@ public class Player extends Entity implements ICollidable {
         body.setTranslateY(ypos - getYRadius());
         r.angleProperty().set(angle);
 
-//        debug.setTranslateX(xpos);
-//        debug.setTranslateY(ypos - getYRadius());
-//        debug.setWidth(getXRadius());
-//        debug.setHeight(getYRadius());
+        if(Settings.isDebug()) {
+            debug.setTranslateX(xpos - getXRadius());
+            debug.setTranslateY(ypos - getYRadius());
+            debug.setWidth(getXRadius() * 2);
+            debug.setHeight(getYRadius() * 2);
+        }
     }
 
     @Override
@@ -163,7 +165,7 @@ public class Player extends Entity implements ICollidable {
 //        float radiians = Physics.toRadiians(angle);
 //        float cos = (float)Math.cos(radiians);
 //        float sin = (float)Math.sin(radiians);
-//        return (width * cos * cos) + (height * sin * sin);
+//        return ((width * cos * cos) + (height * sin * sin))/2.0f;
 //
 //    }
 //
@@ -172,6 +174,6 @@ public class Player extends Entity implements ICollidable {
 //        float radiians = Physics.toRadiians(angle);
 //        float cos = (float)Math.cos(radiians);
 //        float sin = (float)Math.sin(radiians);
-//        return (width * sin * sin) + (height * cos * cos);
+//        return ((width * sin * sin) + (height * cos * cos))/2.0f;
 //    }
 }
