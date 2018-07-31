@@ -67,17 +67,17 @@ public class Player extends Entity implements ICollidable {
 
         // Move
 
-        if(test < 90 && test > -90) {
-            if(input.isBoost()){
-                velocity = (float) (velocity * ((180 - (Math.abs(test)))/ 180));
-            }
-            else{
-                velocity = (float) (velocity * ((90 - (Math.abs(test)))/ 90));
-            }
-
-        }
-        else
-            velocity = 0;
+//        if(test < 90 && test > -90) {
+//            if(input.isBoost()){
+//                velocity = (float) (velocity * ((180 - (Math.abs(test)))/ 180));
+//            }
+//            else{
+//                velocity = (float) (velocity * ((90 - (Math.abs(test)))/ 90));
+//            }
+//
+//        }
+//        else
+//            velocity = 0;
 
 
 

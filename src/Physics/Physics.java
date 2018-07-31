@@ -21,6 +21,10 @@ public class Physics {
         return -mag*(float)Math.cos(angle);
     }
 
+    public static float toRadiians(float angle){
+        return (float)(angle * Math.PI / 180);
+    }
+
     public static float findAngle(float x1, float y1, float x2, float y2){
         float dx = -1*(x2 - x1);
         float dy = y2 - y1;
@@ -34,26 +38,29 @@ public class Physics {
         return angle;
     }
 
-    public static float toRadiians(float angle){
-        return (float)(angle * Math.PI / 180);
-    }
-
     // check if the Objects.Entities.Entity collides with the bounding box
     public static void checkBoxCollision(Entity e, float xmin, float ymin,
                                          float xmax, float ymax, float t, Collision C){
 
         // right
-        checkVerticalLine(e.getX(), e.getXVel(), e.getYVel(), e.getXRadius(), xmax, t, C);
-
+        if(e.getXVel() > 0) {
+            checkVerticalLine(e.getX(), e.getXVel(), e.getYVel(), e.getXRadius(), xmax, t, C);
+        }
 
         // left
-        checkVerticalLine(e.getX(), e.getXVel(), e.getYVel(), e.getXRadius(), xmin, t, C);
+        if(e.getXVel() < 0) {
+            checkVerticalLine(e.getX(), e.getXVel(), e.getYVel(), e.getXRadius(), xmin, t, C);
+        }
 
         // up
-        checkHorizontalLine(e.getY(), e.getXVel(), e.getYVel(), e.getYRadius(), ymin, t, C);
+        if(e.getYVel() < 0) {
+            checkHorizontalLine(e.getY(), e.getXVel(), e.getYVel(), e.getYRadius(), ymin, t, C);
+        }
 
         // down
-        checkHorizontalLine(e.getY(), e.getXVel(), e.getYVel(), e.getYRadius(), ymax, t, C);
+        if(e.getYVel() > 0) {
+            checkHorizontalLine(e.getY(), e.getXVel(), e.getYVel(), e.getYRadius(), ymax, t, C);
+        }
 
     }
 
@@ -127,50 +134,58 @@ public class Physics {
         Collision tempC = new Collision();
 
         // Top Line
-        ydist = o.topY() - e.getY() - e.getYRadius();
-        timetocollision = ydist/e.getYVel();
-        if(timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t){
-            fX = e.getX() + (e.getXVel() * timetocollision);
-            if(fX - e.getXRadius() <= o.rightX() && fX + e.getXRadius() >= o.leftX()) {
-                tempC.t = timetocollision;
-                tempC.xcollide = false;
-                tempC.ycollide = true;
+        if(e.getYVel() > 0) {
+            ydist = o.topY() - e.getY() - e.getYRadius();
+            timetocollision = ydist / e.getYVel();
+            if (timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t) {
+                fX = e.getX() + (e.getXVel() * timetocollision);
+                if (fX - e.getXRadius() <= o.rightX() && fX + e.getXRadius() >= o.leftX()) {
+                    tempC.t = timetocollision;
+                    tempC.xcollide = false;
+                    tempC.ycollide = true;
+                }
             }
         }
 
         // Bottom Line
-        ydist = o.bottomY() - e.getY() + e.getYRadius();
-        timetocollision = ydist/e.getYVel();
-        if(timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t){
-            fX = e.getX() + (e.getXVel() * timetocollision);
-            if(fX - e.getXRadius() <= o.rightX() && fX + e.getXRadius() >= o.leftX()) {
-                tempC.t = timetocollision;
-                tempC.xcollide = false;
-                tempC.ycollide = true;
+        if(e.getYVel() < 0) {
+            ydist = o.bottomY() - e.getY() + e.getYRadius();
+            timetocollision = ydist / e.getYVel();
+            if (timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t) {
+                fX = e.getX() + (e.getXVel() * timetocollision);
+                if (fX - e.getXRadius() <= o.rightX() && fX + e.getXRadius() >= o.leftX()) {
+                    tempC.t = timetocollision;
+                    tempC.xcollide = false;
+                    tempC.ycollide = true;
+                }
             }
         }
 
         // Left Line
-        xdist = o.leftX() - e.getX() - e.getXRadius();
-        timetocollision = xdist/e.getXVel();
-        if(timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t){
-            fY = e.getY() + (e.getYVel() * timetocollision);
-            if(fY - e.getYRadius() <= o.bottomY() && fY + e.getYRadius() >= o.topY()) {
-                tempC.t = timetocollision;
-                tempC.xcollide = true;
-                tempC.ycollide = false;
+        if(e.getXVel() > 0) {
+            xdist = o.leftX() - e.getX() - e.getXRadius();
+            timetocollision = xdist / e.getXVel();
+            if (timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t) {
+                fY = e.getY() + (e.getYVel() * timetocollision);
+                if (fY - e.getYRadius() <= o.bottomY() && fY + e.getYRadius() >= o.topY()) {
+                    tempC.t = timetocollision;
+                    tempC.xcollide = true;
+                    tempC.ycollide = false;
+                }
             }
         }
 
         // Right Line
-        xdist = o.rightX() - e.getX() + e.getXRadius();
-        timetocollision = xdist/e.getXVel();
-        if(timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t){
-            fY = e.getY() + (e.getYVel() * timetocollision);
-            if(fY - e.getYRadius() <= o.bottomY() && fY + e.getYRadius() >= o.topY()) {
-                tempC.t = timetocollision;
-                tempC.xcollide = true;
-                tempC.ycollide = false;
+        if(e.getXVel() < 0) {
+            xdist = o.rightX() - e.getX() + e.getXRadius();
+            timetocollision = xdist / e.getXVel();
+            if (timetocollision >= 0 && timetocollision < t && timetocollision <= tempC.t) {
+                fY = e.getY() + (e.getYVel() * timetocollision);
+                if (fY - e.getYRadius() <= o.bottomY() && fY + e.getYRadius() >= o.topY()) {
+                    tempC.t = timetocollision;
+                    tempC.xcollide = true;
+                    tempC.ycollide = false;
+                }
             }
         }
 
