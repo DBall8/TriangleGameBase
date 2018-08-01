@@ -1,7 +1,9 @@
 package GameManager;
 
-import GameManager.FrameEvent.FrameEvent;
+import GameManager.FrameEvent.ClientFrameEvent;
+import GameManager.FrameEvent.IFrameEvent;
 import GameManager.FrameEvent.FrameEventHandler;
+import GameManager.FrameEvent.ServerFrameEvent;
 import Global.Settings;
 import Objects.Entities.Entity;
 import Objects.Entities.Player;
@@ -10,6 +12,7 @@ import Objects.FireEvent.FireEvent;
 import Objects.FireEvent.FireEventHandler;
 import Objects.ICollidable;
 import Objects.Obstacle;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
@@ -17,10 +20,10 @@ import java.util.*;
 
 public class GameManager extends Pane {
 
-    private HashMap<String,Entity> entities = new HashMap<>();
+    private HashMap<String,Player> players = new HashMap<>();
     private HashMap<String, Projectile> projectiles = new HashMap<>();
     private List<Projectile> projectileQueue = new ArrayList<>();
-    private List<Entity> entityQueue = new ArrayList<>();
+    private List<Entity> playerQueue = new ArrayList<>();
     private List<ICollidable> obstacles = new ArrayList<>();
     private int width, height;
     private GameTime time;
@@ -43,23 +46,31 @@ public class GameManager extends Pane {
         time.play();
     }
 
-    public void start(Scene scene){
-        p1 = new Player("Ply-" + System.currentTimeMillis(), 50, 50);
-        p1.initializeAsPlayer1(scene, new FireEventHandler() {
-            @Override
-            public void handle(FireEvent fe) {
-                // Add bullet here
-                projectileQueue.add(fe.projectile);
-            }
-        });
-        addPlayer(p1);
+    public void start(Scene scene, boolean asServer){
+        if(!asServer){
+            p1 = new Player("Ply-" + System.currentTimeMillis(), 50, 50);
+            p1.initializeAsPlayer1(scene, new FireEventHandler() {
+                @Override
+                public void handle(FireEvent fe) {
+                    // Add bullet here
+                    projectileQueue.add(fe.projectile);
+                }
+            });
+            addPlayer(p1);
+        }
         addObstacle(375, 200, 50, 400);
         addObstacle(200, 375, 400, 50);
         time.play();
     }
 
     public void draw(){
-        Iterator it = entities.entrySet().iterator();
+        Iterator it = players.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
+            e.draw();
+        }
+
+        it = projectiles.entrySet().iterator();
         while(it.hasNext()){
             Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.draw();
@@ -67,17 +78,18 @@ public class GameManager extends Pane {
     }
 
     private void update(){
-        Iterator it = entities.entrySet().iterator();
+        Iterator it = players.entrySet().iterator();
         while(it.hasNext()){
-            Entity e = (Entity)((Map.Entry)it.next()).getValue();
-            e.update();
+            Player p = (Player)((Map.Entry)it.next()).getValue();
+            p.update();
         }
         it = projectiles.entrySet().iterator();
         while(it.hasNext()){
             Projectile p = (Projectile) ((Map.Entry)it.next()).getValue();
+            p.update();
             if(!p.isAlive()){
                 it.remove();
-                removeEntity(p);
+                removeProjectile(p);
             }
         }
 
@@ -94,22 +106,28 @@ public class GameManager extends Pane {
         }
 
         // Add entities from queue
-        it = entityQueue.iterator();
+        it = playerQueue.iterator();
         while(it.hasNext()){
-            Entity e = (Entity) it.next();
-            enterEntity(e);
+            Player p = (Player) it.next();
+            enterPlayer(p);
             it.remove();
         }
-
-
-
     }
 
     private float checkCollisions(float timeLeft){
         float firstCollisionTime = timeLeft; // looks for first collision
         float tempTime;
         // reset collisions for each player
-        Iterator it = entities.entrySet().iterator();
+        Iterator it = players.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
+            e.reset();
+            if((tempTime = e.checkCollisions(timeLeft, obstacles)) < firstCollisionTime){
+                firstCollisionTime = tempTime;
+            }
+        }
+
+        it = projectiles.entrySet().iterator();
         while(it.hasNext()){
             Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.reset();
@@ -123,7 +141,13 @@ public class GameManager extends Pane {
 
     private void move(float time){
 
-        Iterator it = entities.entrySet().iterator();
+        Iterator it = players.entrySet().iterator();
+        while(it.hasNext()){
+            Entity e = (Entity)((Map.Entry)it.next()).getValue();
+            e.move(time);
+        }
+
+        it = projectiles.entrySet().iterator();
         while(it.hasNext()){
             Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.move(time);
@@ -147,54 +171,68 @@ public class GameManager extends Pane {
         }while(timeLeft > 0.01f);
 
         if(p1 != null) {
-            frameHandler.handle(new FrameEvent(p1));
+            frameHandler.handle(new ClientFrameEvent(p1));
+        }
+        else{
+            frameHandler.handle(new ServerFrameEvent(players.entrySet().iterator()));
         }
     }
 
     public void addPlayer(Player p){
-        addEntity(p);
-        obstacles.add(p);
+        safeAdd(playerQueue, p);
     }
 
-    public void addProjectile(Projectile p){
-        addEntity(p);
-        safeAdd(projectileQueue, p);
+    private void enterPlayer(Player p){
+        if(!players.containsKey(p.getID())) {
+            players.put(p.getID(), p);
+            obstacles.add(p);
+            this.getChildren().add(p.getVisuals());
+        }
     }
 
-    private void enterProjectile(Projectile p){
-        projectiles.put(p.getID(), p);
-        entities.put(p.getID(), p);
-        getChildren().add(p.getVisuals());
+    public void removePlayer(String ID){
+        Player p = players.get(ID);
+        obstacles.remove(p);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                getChildren().remove(p.getVisuals());
+            }
+        });
+        players.remove(ID);
     }
 
-    public void addEntity(Entity e){
-        safeAdd(entityQueue, e);
-    }
-
-    private void enterEntity(Entity e){
-        entities.put(e.getID(), e);
-        this.getChildren().add(e.getVisuals());
-    }
-
-    public void removeEntity(Entity e){
-        entities.remove(e.getID());
-        this.getChildren().remove(e.getVisuals());
-    }
-
-    public Entity getEntity(String id){
-        if(entities.containsKey(id)){
-            return entities.get(id);
+    public Entity getPlayer(String id){
+        if(players.containsKey(id)){
+            return players.get(id);
         }
         else{
             return null;
         }
     }
 
-    public void updateEntity(String ID, float x, float y, float xvel, float yvel, float angle){
-        if(entities.containsKey(ID)){
-            entities.get(ID).updateState(x, y, xvel, yvel, angle);
+    public void updatePlayer(String ID, float x, float y, float xvel, float yvel, float angle){
+        if(players.containsKey(ID)){
+            players.get(ID).updateState(x, y, xvel, yvel, angle);
         }
     }
+
+    public void addProjectile(Projectile p){
+        safeAdd(projectileQueue, p);
+    }
+
+    private void enterProjectile(Projectile p){
+        if(!projectiles.containsKey(p.getID())){
+            projectiles.put(p.getID(), p);
+            getChildren().add(p.getVisuals());
+        }
+
+    }
+
+    private void removeProjectile(Projectile p){
+        getChildren().remove(p.getVisuals());
+    }
+
 
     private void addObstacle(int xpos, int ypos, int width, int height){
         Obstacle o = new Obstacle(xpos, ypos, width, height);
@@ -208,6 +246,15 @@ public class GameManager extends Pane {
 
     private synchronized <T> void safeRemove(List<T> list, T item){
         list.remove(item);
+    }
+
+    public String getPlayerID(){
+        if(p1 != null) {
+            return p1.getID();
+        }
+        else{
+            return "";
+        }
     }
 
 }

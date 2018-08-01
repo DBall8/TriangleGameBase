@@ -3,12 +3,12 @@ package GameManager.FrameEvent;
 import Objects.Entities.Player;
 import org.json.JSONObject;
 
-public class FrameEvent {
+public class ClientFrameEvent implements IFrameEvent{
 
     private String ID;
     private float x, y, xvel, yvel, angle;
 
-    public FrameEvent(Player p){
+    public ClientFrameEvent(Player p){
         this.ID = p.getID();
         this.x = p.getX();
         this.y = p.getY();
@@ -17,7 +17,7 @@ public class FrameEvent {
         this.angle = p.getAngle();
     }
 
-    public FrameEvent(JSONObject json){
+    public ClientFrameEvent(JSONObject json){
         this.ID = json.getString("ID");
         this.x = json.getFloat("X");
         this.y = json.getFloat("Y");
@@ -26,6 +26,7 @@ public class FrameEvent {
         this.angle = json.getFloat("angle");
     }
 
+    @Override
     public JSONObject toJSON(){
         JSONObject json = new JSONObject();
         json.put("ID", ID);
