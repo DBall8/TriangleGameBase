@@ -1,19 +1,28 @@
 package Global;
 
+/**
+ * A nested singleton class for tracking game settings
+ */
 public class Settings {
 
-    private static final int FRAMERATE = 60;
-    public final static boolean BOUNCE = false;
+    private static final int FRAMERATE = 60; // how many frames are genereated per second
+    public final static boolean BOUNCE = false; // whether or not collisions cause bouncing
+
+    // Screen dimenions
     private static int WIDTH = 800;
     private static int HEIGHT = 800;
 
+    // If true, shows debug output
     private final static boolean DEBUG = false;
 
+    // Nested singleton
     private static class Settings_{
         private static final Settings instance = new Settings();
     }
 
     private static Settings getInstance(){ return Settings_.instance; }
+
+    // Getters and Setters
 
     public static void setWindowSize(int width, int height){
         getInstance().WIDTH = width;

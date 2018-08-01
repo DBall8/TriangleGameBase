@@ -16,24 +16,32 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
+/**
+ * A class for a player entity
+ */
 public class Player extends Entity implements ICollidable {
 
-    private Polygon body;
-    private Rotate r;
-    private UserInputListener input;
+    private final static int WIDTH = 40;
+    private final static int HEIGHT = 40;
 
-    private Rectangle debug;
+    private Polygon body; // The shape to use as the player's visual body
+    private Rotate r; // the rotation property for rotating the visuals
+    private UserInputListener input; // the object tracking user inputs
 
-    private Ability primaryFire;
+    private Rectangle debug; // a debug shape for showing the collision boundaries
 
+    private Ability primaryFire; // the primary fire ability of the player
+
+    // Constructor
     public Player(String ID, int x, int y){
         super(ID, x, y);
         angle = 0;
         xvel = 20;
         yvel = 20;
-        width = 40;
-        height = 50;
+        width = WIDTH;
+        height = HEIGHT;
 
+        // Build a triangle from the player's dimensions
         body = new Polygon();
         body.getPoints().addAll(new Double[]{
                 (double)width/2, 0.0,
@@ -43,6 +51,7 @@ public class Player extends Entity implements ICollidable {
         body.setFill(Color.GREEN);
         boundingBox = new Rectangle(width, height);
 
+        // Set the pivot point (likely not needed but might want to change later)
         r = new Rotate();
         r.setPivotX(width/2);
         r.setPivotY(height/2);
@@ -56,22 +65,31 @@ public class Player extends Entity implements ICollidable {
         }
     }
 
+    /**
+     * Makes this player the controllable player for this game
+     * @param scene the scene the player is controlled in
+     * @param feHandler the fire event handler for handling ability firing
+     */
     public void initializeAsPlayer1(Scene scene, FireEventHandler feHandler){
         input = new UserInputListener(scene);
         primaryFire = new PrimaryFire(this, scene, feHandler);
     }
 
+    /**
+     * Updates the player according to the current state of the user input
+     */
     @Override
     public void update(){
 
+        // If not user input object, there is nothing to update
         if(input == null){
             return;
         }
 
+        // convert velocity to scalar
         float velocity = getVelocity();
 
-        // Slow
-
+        // Slow the player from "friction"
         float mag = Math.abs(velocity);
         if( mag > 0.5){
             velocity -= 0.5 * mag / velocity;
@@ -80,19 +98,22 @@ public class Player extends Entity implements ICollidable {
             velocity = 0;
         }
 
-        // Rotate
+        // Rotate the player towards the mouse
 
         // Get the angle the mouse pointer is from the player
         double mouseAngle =180/Math.PI * Physics.findAngle(xpos, ypos, input.getMouseX(), input.getMouseY());
         // Get the amount to turn in
-        double test = 180/Math.PI *Math.sin((mouseAngle - angle)*Math.PI/180);
+        double dAngle = 180/Math.PI *Math.sin((mouseAngle - angle)*Math.PI/180);
 
-        angle += test;
+        angle += dAngle;
 
-        // Move
+        // Update the player's velocity
 
         float distFromMouse = Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
+        // Only move if far enough from the mouse
         if(distFromMouse > getYRadius() * 1.5) {
+
+            // Move forward if forward key is pressed and not at max speed, also accounting for boosting
             if (input.isUp()) {
                 if (velocity < 10) {
                     velocity += 0.8;
@@ -101,21 +122,26 @@ public class Player extends Entity implements ICollidable {
                 }
 
             }
+            // Move backward if the back key is presed
             if (input.isDown() && velocity > -10) {
                 velocity -= 0.8;
             }
         }
 
-
+        // convert new velocity back to its components
         float angleRads = Physics.toRadiians(angle);
         xvel = Physics.xComponent(velocity, angleRads);
         yvel = Physics.yComponent(velocity, angleRads);
 
-        // Abilities
+        // attempt to use all abilities
         primaryFire.use();
 
     }
 
+    /**
+     * Returns the visual object to display this player
+     * @return the triangle fir displaying this player
+     */
     @Override
     public Node getVisuals(){
         Group g = new Group();
@@ -126,10 +152,15 @@ public class Player extends Entity implements ICollidable {
         return g;
     }
 
+    /**
+     * Updates the visuals of this player
+     */
     @Override
     public void draw(){
+        // move to the correct position
         body.setTranslateX(xpos - getXRadius());
         body.setTranslateY(ypos - getYRadius());
+        // rotate
         r.angleProperty().set(angle);
 
         if(Settings.isDebug()) {
@@ -139,6 +170,8 @@ public class Player extends Entity implements ICollidable {
             debug.setHeight(getYRadius() * 2);
         }
     }
+
+    // Getters
 
     @Override
     public float rightX() {

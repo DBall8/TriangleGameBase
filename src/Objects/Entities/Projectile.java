@@ -8,14 +8,23 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
+/**
+ * A class for handling projectile entities
+ */
 public class Projectile extends Entity {
 
-    private final static float PVELOCITY = 5;
-    private final static float MOVEFACTOR = 0.9f;
+    private final static int WIDTH = 10;
+    private final static int HEIGHT = 30;
+    private final static float PVELOCITY = 5; // the base velocity of a projectile
+    private final static float MOVEFACTOR = 0.9f; // the percentage of the player's speed to add to the projectile speed
 
-    private Player owner;
-    private boolean alive;
+    private Player owner; // the player that shot this projectile
+    private boolean alive; // true when projectile is still traveling through the air
 
+    /**
+     * Constructor for brand new projectile
+     * @param p the player who shot the projectile
+     */
     public Projectile(Player p){
         super("Proj-" + System.currentTimeMillis(), (int)p.getX(), (int)p.getY());
         float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
@@ -23,8 +32,8 @@ public class Projectile extends Entity {
         this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
         this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
 
-        this.width = 10;
-        this.height = 30;
+        this.width = WIDTH;
+        this.height = HEIGHT;
         this.owner = p;
         boundingBox = new Rectangle(width, height);
 
