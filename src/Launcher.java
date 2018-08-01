@@ -1,3 +1,5 @@
+import GameManager.FrameEvent.FrameEvent;
+import GameManager.FrameEvent.FrameEventHandler;
 import GameManager.GameManager;
 import Global.Settings;
 import javafx.application.Application;
@@ -10,7 +12,12 @@ public class Launcher extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Settings.setWindowSize(800, 800);
-        GameManager game = new GameManager();
+        GameManager game = new GameManager(new FrameEventHandler() {
+            @Override
+            public void handle(FrameEvent fe) {
+
+            }
+        });
 
         Scene scene = new Scene(game, 800, 800);
 

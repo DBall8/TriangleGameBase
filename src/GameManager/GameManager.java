@@ -1,5 +1,7 @@
 package GameManager;
 
+import GameManager.FrameEvent.FrameEvent;
+import GameManager.FrameEvent.FrameEventHandler;
 import Global.Settings;
 import Objects.Entities.Entity;
 import Objects.Entities.Player;
@@ -17,15 +19,22 @@ public class GameManager extends Pane {
 
     private HashMap<String,Entity> entities = new HashMap<>();
     private HashMap<String, Projectile> projectiles = new HashMap<>();
-    private List<Projectile> fireQueue = new ArrayList<>();
+    private List<Projectile> projectileQueue = new ArrayList<>();
+    private List<Entity> entityQueue = new ArrayList<>();
     private List<ICollidable> obstacles = new ArrayList<>();
     private int width, height;
     private GameTime time;
 
-    public GameManager(){
+    private Player p1;
+
+    private FrameEventHandler frameHandler;
+
+    public GameManager(FrameEventHandler frameHandler){
         super();
         this.width = Settings.getWindowWidth();
         this.height = Settings.getWindowHeight();
+
+        this.frameHandler = frameHandler;
 
         time = new GameTime(this);
     }
@@ -35,16 +44,15 @@ public class GameManager extends Pane {
     }
 
     public void start(Scene scene){
-        Player p = new Player("Ply-1", 50, 50);
-        p.initializeAsPlayer1(scene, new FireEventHandler() {
+        p1 = new Player("Ply-" + System.currentTimeMillis(), 50, 50);
+        p1.initializeAsPlayer1(scene, new FireEventHandler() {
             @Override
             public void handle(FireEvent fe) {
                 // Add bullet here
-                fireQueue.add(fe.projectile);
+                projectileQueue.add(fe.projectile);
             }
         });
-        addPlayer(p);
-        addPlayer(new Player ("Ply2", 750, 750));
+        addPlayer(p1);
         addObstacle(375, 200, 50, 400);
         addObstacle(200, 375, 400, 50);
         time.play();
@@ -64,14 +72,6 @@ public class GameManager extends Pane {
             Entity e = (Entity)((Map.Entry)it.next()).getValue();
             e.update();
         }
-
-        // Add projectiles from queue
-        it = fireQueue.iterator();
-        while(it.hasNext()){
-            Projectile p = (Projectile)it.next();
-            addProjectile(p);
-            it.remove();
-        }
         it = projectiles.entrySet().iterator();
         while(it.hasNext()){
             Projectile p = (Projectile) ((Map.Entry)it.next()).getValue();
@@ -80,6 +80,29 @@ public class GameManager extends Pane {
                 removeEntity(p);
             }
         }
+
+        updateFromQueues();
+    }
+
+    private void updateFromQueues(){
+        // Add projectiles from queue
+        Iterator it = projectileQueue.iterator();
+        while(it.hasNext()){
+            Projectile p = (Projectile)it.next();
+            enterProjectile(p);
+            it.remove();
+        }
+
+        // Add entities from queue
+        it = entityQueue.iterator();
+        while(it.hasNext()){
+            Entity e = (Entity) it.next();
+            enterEntity(e);
+            it.remove();
+        }
+
+
+
     }
 
     private float checkCollisions(float timeLeft){
@@ -122,6 +145,10 @@ public class GameManager extends Pane {
             timeLeft -= firstCollisionTime;
 
         }while(timeLeft > 0.01f);
+
+        if(p1 != null) {
+            frameHandler.handle(new FrameEvent(p1));
+        }
     }
 
     public void addPlayer(Player p){
@@ -131,10 +158,20 @@ public class GameManager extends Pane {
 
     public void addProjectile(Projectile p){
         addEntity(p);
+        safeAdd(projectileQueue, p);
+    }
+
+    private void enterProjectile(Projectile p){
         projectiles.put(p.getID(), p);
+        entities.put(p.getID(), p);
+        getChildren().add(p.getVisuals());
     }
 
     public void addEntity(Entity e){
+        safeAdd(entityQueue, e);
+    }
+
+    private void enterEntity(Entity e){
         entities.put(e.getID(), e);
         this.getChildren().add(e.getVisuals());
     }
@@ -149,7 +186,6 @@ public class GameManager extends Pane {
             return entities.get(id);
         }
         else{
-            System.err.println("Entity with id " + id + " does not exist.");
             return null;
         }
     }
@@ -164,6 +200,14 @@ public class GameManager extends Pane {
         Obstacle o = new Obstacle(xpos, ypos, width, height);
         getChildren().add(o);
         obstacles.add(o);
+    }
+
+    private synchronized <T> void safeAdd(List<T> list, T item){
+        list.add(item);
+    }
+
+    private synchronized <T> void safeRemove(List<T> list, T item){
+        list.remove(item);
     }
 
 }
