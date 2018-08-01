@@ -7,13 +7,20 @@ import org.json.JSONObject;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * A class for containing the status of every player in a server's game simulation
+ */
 public class ServerFrameEvent implements IFrameEvent {
 
-    private JSONObject json;
-    private ClientFrameEvent[] clientFrames;
+    private JSONObject json; // server's status as a json
+    private ClientFrameEvent[] clientFrames; // an array of each player's status
 
+    /**
+     * Creates a server frame event from a players map iterator
+     * @param it the iterator from the players hashmap
+     */
     public ServerFrameEvent(Iterator it){
-
+        // Create a json object with an array of all player statuses
         json = new JSONObject();
         JSONArray playerArray = new JSONArray();
         while(it.hasNext()){
@@ -25,6 +32,10 @@ public class ServerFrameEvent implements IFrameEvent {
         json.put("players", playerArray);
     }
 
+    /**
+     * Create a list of player statuses from a message received
+     * @param json the message received
+     */
     public ServerFrameEvent(JSONObject json){
         JSONArray playerArray = json.getJSONArray("players");
         clientFrames = new ClientFrameEvent[playerArray.length()];

@@ -3,11 +3,18 @@ package GameManager.FrameEvent;
 import Objects.Entities.Player;
 import org.json.JSONObject;
 
+/**
+ * Class for handling the state of a single client's players
+ */
 public class ClientFrameEvent implements IFrameEvent{
 
-    private String ID;
-    private float x, y, xvel, yvel, angle;
+    private String ID; // the client's ID
+    private float x, y, xvel, yvel, angle; // the client's player's status
 
+    /**
+     * Create a frame event from a player
+     * @param p the player to track the status of
+     */
     public ClientFrameEvent(Player p){
         this.ID = p.getID();
         this.x = p.getX();
@@ -17,6 +24,10 @@ public class ClientFrameEvent implements IFrameEvent{
         this.angle = p.getAngle();
     }
 
+    /**
+     * Create a client frame from a message received
+     * @param json the message received
+     */
     public ClientFrameEvent(JSONObject json){
         this.ID = json.getString("ID");
         this.x = json.getFloat("X");
@@ -26,6 +37,7 @@ public class ClientFrameEvent implements IFrameEvent{
         this.angle = json.getFloat("angle");
     }
 
+    // Conver the frame to a json object
     @Override
     public JSONObject toJSON(){
         JSONObject json = new JSONObject();
@@ -38,6 +50,8 @@ public class ClientFrameEvent implements IFrameEvent{
 
         return json;
     }
+
+    // Getters
 
     public float getX() { return x; }
 
