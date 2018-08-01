@@ -15,7 +15,6 @@ import java.util.*;
 
 public class GameManager extends Pane {
 
-    private Scene scene;
     private HashMap<String,Entity> entities = new HashMap<>();
     private HashMap<String, Projectile> projectiles = new HashMap<>();
     private List<Projectile> fireQueue = new ArrayList<>();
@@ -31,8 +30,11 @@ public class GameManager extends Pane {
         time = new GameTime(this);
     }
 
+    public void start(){
+        time.play();
+    }
+
     public void start(Scene scene){
-        this.scene = scene;
         Player p = new Player("Ply-1", 50, 50);
         p.initializeAsPlayer1(scene, new FireEventHandler() {
             @Override
