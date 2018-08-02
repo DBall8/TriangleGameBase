@@ -37,7 +37,7 @@ public class PrimaryFire extends Ability {
 
     // Attempts to use the ability
     @Override
-    public void use(){
+    public boolean use(){
         // Fire only if the mouse is presseed, the ability is not on cooldown, and the number of shots left is greater
         // than none
         if(keyDown && !onCooldown && remainingShots > 0){
@@ -62,7 +62,9 @@ public class PrimaryFire extends Ability {
 
             // fire the shot
             feHandler.handle(new FireEvent(new Projectile(p)));
-
+            return true;
         }
+
+        return false;
     }
 }

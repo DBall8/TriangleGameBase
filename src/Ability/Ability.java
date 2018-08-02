@@ -78,6 +78,6 @@ public abstract class Ability {
     }
 
     // Function for using the ability
-    public abstract void use();
+    public abstract boolean use();
 
 }

@@ -8,11 +8,13 @@ import javafx.scene.shape.Rectangle;
  */
 public class Obstacle extends Rectangle implements ICollidable {
 
+    final static Color COLOR = Color.GREY;
 
     public Obstacle(int xpos, int ypos, int width, int height){
         super(width, height, Color.BLACK);
         setX(xpos);
         setY(ypos);
+        setFill(COLOR);
     }
 
     public float rightX(){

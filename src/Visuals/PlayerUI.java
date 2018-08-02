@@ -1,5 +1,6 @@
 package Visuals;
 
+import Ability.Boost;
 import Objects.Entities.Player;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -12,11 +13,13 @@ public class PlayerUI extends Group{
     final static int HEALTHBARWIDTH = 200;
     final static int HEALTHBARHEIGHT = 10;
     final static int HEALTHBARBORDER = 5;
+    final static int BOOSTBARHEIGHT = 5;
     final static int SPACING = 10;
     final static int FONTSIZE = 30;
 
     private Text playerLabel;
     private Rectangle healthBar;
+    private Rectangle boostMeter;
 
     private Color color;
 
@@ -53,7 +56,11 @@ public class PlayerUI extends Group{
         healthBar.setTranslateY(SPACING + HEALTHBARBORDER);
         healthBar.setTranslateX(HEALTHBARBORDER);
 
-        getChildren().addAll(playerLabel, healthBarBG, healthBar);
+        boostMeter = new Rectangle(2*HEALTHBARBORDER + HEALTHBARWIDTH, BOOSTBARHEIGHT);
+        boostMeter.setFill(Color.CYAN);
+        boostMeter.setTranslateY(2*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT);
+
+        getChildren().addAll(playerLabel, healthBarBG, healthBar, boostMeter);
     }
 
     public void notifyChanged(Player p) {
@@ -71,12 +78,16 @@ public class PlayerUI extends Group{
         healthBar.setWidth(HEALTHBARWIDTH * healthPercentage);
     }
 
+    public void notifyBoostChanged(double percent){
+        boostMeter.setWidth(totalWidth() * percent);
+    }
+
     int totalWidth(){
         return 2*HEALTHBARBORDER + HEALTHBARWIDTH;
     }
 
     int totalHeight(){
-        return (FONTSIZE/2) + SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT;
+        return (FONTSIZE/2) + SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + SPACING + BOOSTBARHEIGHT + SPACING;
     }
 
     public Color getColor(){ return color; }

@@ -2,6 +2,8 @@ package Objects.Entities;
 
 import Ability.Ability;
 import Ability.PrimaryFire;
+import Ability.Boost;
+import Animation.HitAnimation;
 import Global.Settings;
 import Objects.FireEvent.FireEvent;
 import Objects.FireEvent.FireEventHandler;
@@ -37,12 +39,16 @@ public class Player extends Entity implements ICollidable {
 
     private Rectangle debug; // a debug shape for showing the collision boundaries
 
-    private Ability primaryFire; // the primary fire ability of the player
+    private PrimaryFire primaryFire; // the primary fire ability of the player
+    private Boost boost;
 
     private List<Projectile> newShots = new ArrayList<>();
 
     private PlayerUI hud;
     private int health = MAXHEALTH;
+    private Color color;
+
+    Group visuals;
 
     // Constructor
     public Player(String ID, int x, int y){
@@ -70,10 +76,14 @@ public class Player extends Entity implements ICollidable {
 
         body.getTransforms().add(r);
 
+        visuals = new Group();
+        visuals.getChildren().add(body);
+
         if(Settings.isDebug()) {
             debug = new Rectangle(1, 1);
             debug.setFill(Color.TRANSPARENT);
             debug.setStroke(Color.BLUE);
+            visuals.getChildren().add(debug);
         }
     }
 
@@ -85,6 +95,7 @@ public class Player extends Entity implements ICollidable {
     public void initializeAsPlayer1(Scene scene, FireEventHandler feHandler){
         input = new UserInputListener(scene);
         primaryFire = new PrimaryFire(this, scene, feHandler);
+        boost = new Boost(this, scene);
     }
 
     /**
@@ -121,6 +132,8 @@ public class Player extends Entity implements ICollidable {
 
         // Update the player's velocity
 
+        boolean boosting = boost.use();
+
         float distFromMouse = Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
         // Only move if far enough from the mouse
         if(distFromMouse > getYRadius() * 1.5) {
@@ -129,7 +142,7 @@ public class Player extends Entity implements ICollidable {
             if (input.isUp()) {
                 if (velocity < 10) {
                     velocity += 0.8;
-                } else if (input.isBoost() && velocity < 20) {
+                } else if (boosting && velocity < 20) {
                     velocity += 1;
                 }
 
@@ -155,7 +168,11 @@ public class Player extends Entity implements ICollidable {
      */
     public void attachHUD(PlayerUI hud){
         this.hud = hud;
-        body.setFill(hud.getColor());
+        if(boost != null){
+            boost.attachUI(hud);
+        }
+        color = hud.getColor();
+        body.setFill(color);
     }
 
     /**
@@ -164,12 +181,7 @@ public class Player extends Entity implements ICollidable {
      */
     @Override
     public Node getVisuals(){
-        Group g = new Group();
-        g.getChildren().add(body);
-        if(Settings.isDebug()){
-            g.getChildren().add(debug);
-        }
-        return g;
+        return visuals;
     }
 
     /**
@@ -194,6 +206,7 @@ public class Player extends Entity implements ICollidable {
     void damage(int amount){
         if(health > 0){
             health -= amount;
+            new HitAnimation(visuals, (int)xpos, (int)ypos);
         }
         if(health < 0){
             health = 0;
@@ -237,6 +250,8 @@ public class Player extends Entity implements ICollidable {
     public int getHealth(){ return this.health; }
 
     public PlayerUI getUI(){ return hud; }
+
+    public Color getColor(){ return color; }
 
 //    @Override
 //    public float getXRadius(){

@@ -4,6 +4,7 @@ import Global.Settings;
 import Objects.ICollidable;
 import Physics.Physics;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class Projectile extends Entity {
         this.height = HEIGHT;
         this.ownerID = p.getID();
         boundingBox = new Rectangle(width, height);
+        boundingBox.setFill(p.getColor());
 
         alive = true;
     }
@@ -57,6 +59,7 @@ public class Projectile extends Entity {
         this.height = HEIGHT;
         this.ownerID = ownerID;
         boundingBox = new Rectangle(width, height);
+        boundingBox.setFill(Color.RED);
 
         alive = true;
     }
