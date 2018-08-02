@@ -1,4 +1,4 @@
-import GameManager.FrameEvent.IFrameEvent;
+import GameManager.FrameEvent.FrameEvent;
 import GameManager.FrameEvent.FrameEventHandler;
 import GameManager.GameManager;
 import Global.Settings;
@@ -17,7 +17,7 @@ public class Launcher extends Application {
         Settings.setWindowSize(800, 800);
         GameManager game = new GameManager(new FrameEventHandler() {
             @Override
-            public void handle(IFrameEvent fe) {
+            public void handle(FrameEvent fe) {
 
             }
         });

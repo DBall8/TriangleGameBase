@@ -18,7 +18,7 @@ public class Projectile extends Entity {
     private final static float PVELOCITY = 5; // the base velocity of a projectile
     private final static float MOVEFACTOR = 0.9f; // the percentage of the player's speed to add to the projectile speed
 
-    private Player owner; // the player that shot this projectile
+    private String ownerID; // the player that shot this projectile
     private boolean alive; // true when projectile is still traveling through the air
 
     /**
@@ -34,7 +34,7 @@ public class Projectile extends Entity {
 
         this.width = WIDTH;
         this.height = HEIGHT;
-        this.owner = p;
+        this.ownerID = p.getID();
         boundingBox = new Rectangle(width, height);
 
         alive = true;
@@ -45,16 +45,15 @@ public class Projectile extends Entity {
      * @param ID The ID of the projectile
      * @param p the player who fired the projectile
      */
-    public Projectile(String ID, Player p){
-        super(ID, (int)p.getX(), (int)p.getY());
-        float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
-        this.angle = p.getAngle();
-        this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
-        this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
+    public Projectile(String ID, String ownerID, float x, float y, float xvel, float yvel, float angle){
+        super(ID, (int)x, (int)y);
+        this.angle = angle;
+        this.xvel = xvel;
+        this.yvel = yvel;
 
-        this.width = 10;
-        this.height = 30;
-        this.owner = p;
+        this.width = WIDTH;
+        this.height = HEIGHT;
+        this.ownerID = ownerID;
         boundingBox = new Rectangle(width, height);
 
         alive = true;
@@ -78,7 +77,7 @@ public class Projectile extends Entity {
             return time;
         }
         for(ICollidable o: obstacles){
-            if(o.equals(owner)){
+            if(o instanceof Player && ((Player)o).getID().equals(ownerID)){
                 continue;
             }
             Physics.checkObstacleCollision(this, o, time, tempCollision);
@@ -112,4 +111,6 @@ public class Projectile extends Entity {
     public boolean isAlive() {
         return alive;
     }
+
+    public String getOwnerID(){ return ownerID; }
 }

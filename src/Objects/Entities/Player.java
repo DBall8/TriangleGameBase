@@ -16,6 +16,9 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class for a player entity
  */
@@ -31,6 +34,8 @@ public class Player extends Entity implements ICollidable {
     private Rectangle debug; // a debug shape for showing the collision boundaries
 
     private Ability primaryFire; // the primary fire ability of the player
+
+    private List<Projectile> newShots = new ArrayList<>();
 
     // Constructor
     public Player(String ID, int x, int y){
@@ -170,6 +175,14 @@ public class Player extends Entity implements ICollidable {
             debug.setHeight(getYRadius() * 2);
         }
     }
+
+    public void addNewShot(Projectile p){
+        this.newShots.add(p);
+    }
+
+    public List<Projectile> getNewShots(){ return newShots; }
+
+    public void clearNewShots(){ newShots.clear(); }
 
     // Getters
 

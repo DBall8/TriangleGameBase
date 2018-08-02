@@ -1,19 +1,22 @@
 package GameManager.FrameEvent;
 
 import Objects.Entities.Player;
+import Objects.Entities.Projectile;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
  * A class for containing the status of every player in a server's game simulation
  */
-public class ServerFrameEvent implements IFrameEvent {
+public class ServerFrameEvent extends FrameEvent {
 
     private JSONObject json; // server's status as a json
     private ClientFrameEvent[] clientFrames; // an array of each player's status
+    private Projectile[] newProjectiles;
 
     /**
      * Creates a server frame event from a players map iterator

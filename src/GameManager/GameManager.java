@@ -1,10 +1,8 @@
 package GameManager;
 
 import GameManager.FrameEvent.ClientFrameEvent;
-import GameManager.FrameEvent.IFrameEvent;
 import GameManager.FrameEvent.FrameEventHandler;
 import GameManager.FrameEvent.ServerFrameEvent;
-import Global.Settings;
 import Objects.Entities.Entity;
 import Objects.Entities.Player;
 import Objects.Entities.Projectile;
@@ -64,7 +62,8 @@ public class GameManager extends Pane {
                 @Override
                 public void handle(FireEvent fe) {
                     // Add bullet here
-                    projectileQueue.add(fe.projectile);
+                    enterProjectile(fe.projectile);
+                    p1.addNewShot(fe.projectile);
                 }
             });
             addPlayer(p1);
@@ -213,7 +212,7 @@ public class GameManager extends Pane {
             // move each entity to the time of the first detected collision (if any)
             move(firstCollisionTime);
 
-            // mark down the reamining time in the time step
+            // mark down the remaining time in the time step
             timeLeft -= firstCollisionTime;
 
         }while(timeLeft > 0.01f);
@@ -287,6 +286,20 @@ public class GameManager extends Pane {
     }
 
     /**
+     * Retreives a projectile
+     * @param id the ID of the projectile to retreive
+     * @return the projectile instance, or null if the projectile's ID is not present
+     */
+    public Projectile getProjectile(String id){
+        if(projectiles.containsKey(id)){
+            return projectiles.get(id);
+        }
+        else{
+            return null;
+        }
+    }
+
+    /**
      * Updates the status of a player
      * @param ID the ID of the player to upate
      * @param x the player's new x position
@@ -307,6 +320,12 @@ public class GameManager extends Pane {
      */
     public void addProjectile(Projectile p){
         safeAdd(projectileQueue, p);
+        if(p1 == null){
+            Player owner = players.get(p.getOwnerID());
+            if(owner != null){
+                owner.addNewShot(p);
+            }
+        }
     }
 
     /**
