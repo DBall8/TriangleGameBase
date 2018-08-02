@@ -22,7 +22,7 @@ public class Projectile extends Entity {
     private boolean alive; // true when projectile is still traveling through the air
 
     /**
-     * Constructor for brand new projectile
+     * Constructor for brand new projectile, only differs in that it creates its own ID
      * @param p the player who shot the projectile
      */
     public Projectile(Player p){
@@ -40,6 +40,11 @@ public class Projectile extends Entity {
         alive = true;
     }
 
+    /**
+     * Constructor for a projectile that already has an ID
+     * @param ID The ID of the projectile
+     * @param p the player who fired the projectile
+     */
     public Projectile(String ID, Player p){
         super(ID, (int)p.getX(), (int)p.getY());
         float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
@@ -55,6 +60,12 @@ public class Projectile extends Entity {
         alive = true;
     }
 
+    /**
+     * Overriding collision check to never stop the timer but only see if the projectile hit anything during the step
+     * @param time the time step amount
+     * @param obstacles a list of potential objects to collide with
+     * @return
+     */
     @Override
     public float checkCollisions(float time, List<ICollidable> obstacles){
         if(boundingBox == null){
@@ -79,6 +90,9 @@ public class Projectile extends Entity {
         return time;
     }
 
+    /**
+     * Updates the visuals of the projectile
+     */
     @Override
     public void draw() {
         if(alive) {
@@ -87,6 +101,8 @@ public class Projectile extends Entity {
             boundingBox.setRotate(angle);
         }
     }
+
+    // Getters
 
     @Override
     public Node getVisuals() {

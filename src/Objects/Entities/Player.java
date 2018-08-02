@@ -22,7 +22,7 @@ import javafx.scene.transform.Rotate;
 public class Player extends Entity implements ICollidable {
 
     private final static int WIDTH = 40;
-    private final static int HEIGHT = 40;
+    private final static int HEIGHT = 50;
 
     private Polygon body; // The shape to use as the player's visual body
     private Rotate r; // the rotation property for rotating the visuals

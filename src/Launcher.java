@@ -6,6 +6,9 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Class for launching a single player, local, game simulation
+ */
 public class Launcher extends Application {
 
 

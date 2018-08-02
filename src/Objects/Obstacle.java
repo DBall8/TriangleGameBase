@@ -1,9 +1,11 @@
 package Objects;
 
-import Objects.ICollidable;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Simple collidable object class for creating walls
+ */
 public class Obstacle extends Rectangle implements ICollidable {
 
 
