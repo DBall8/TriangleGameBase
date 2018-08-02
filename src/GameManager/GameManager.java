@@ -10,7 +10,10 @@ import Objects.FireEvent.FireEvent;
 import Objects.FireEvent.FireEventHandler;
 import Objects.ICollidable;
 import Objects.Obstacle;
+import Visuals.Background;
+import Visuals.HUD;
 import javafx.application.Platform;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
@@ -20,6 +23,10 @@ import java.util.*;
  * A class for creating a game simulation
  */
 public class GameManager extends Pane {
+
+    private Background background;
+    private Group foreground;
+    private HUD hud;
 
     private HashMap<String,Player> players = new HashMap<>(); // a map of all players by their ID
     private HashMap<String, Projectile> projectiles = new HashMap<>(); // a map of all projectiles by their ID (should it be a list???)
@@ -35,6 +42,12 @@ public class GameManager extends Pane {
     // Constructor
     public GameManager(FrameEventHandler frameHandler){
         super();
+
+        background = new Background();
+        foreground = new Group();
+        hud = new HUD();
+
+        getChildren().addAll(background, foreground, hud);
 
         this.frameHandler = frameHandler;
 
@@ -124,7 +137,7 @@ public class GameManager extends Pane {
     /**
      * Takes all new entities received from outside the GameManager and adds them to the game
      */
-    private void updateFromQueues(){
+    private synchronized void updateFromQueues(){
         // Add projectiles from queue
         Iterator it = projectileQueue.iterator();
         while(it.hasNext()){
@@ -246,7 +259,9 @@ public class GameManager extends Pane {
         if(!players.containsKey(p.getID())) {
             players.put(p.getID(), p); // add to map
             obstacles.add(p); // add to collidable objects
-            this.getChildren().add(p.getVisuals()); // add to visuals
+            foreground.getChildren().add(p.getVisuals()); // add to visuals
+
+            p.attachHUD(hud.addNewPlayerUI());
         }
     }
 
@@ -263,9 +278,12 @@ public class GameManager extends Pane {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                getChildren().remove(p.getVisuals());
+                foreground.getChildren().remove(p.getVisuals());
+                hud.removePlayerUI(p.getUI());
             }
         });
+
+
 
         // remove the player from the map
         players.remove(ID);
@@ -336,7 +354,7 @@ public class GameManager extends Pane {
         // Make sure the projectile does not already exist
         if(!projectiles.containsKey(p.getID())){
             projectiles.put(p.getID(), p); // put in projectiles map
-            getChildren().add(p.getVisuals()); // add the visuals
+            foreground.getChildren().add(p.getVisuals()); // add the visuals
         }
 
     }
@@ -346,7 +364,7 @@ public class GameManager extends Pane {
      * @param p the projectile to remove
      */
     private void removeProjectile(Projectile p){
-        getChildren().remove(p.getVisuals());
+        foreground.getChildren().remove(p.getVisuals());
     }
 
     /**
@@ -360,7 +378,7 @@ public class GameManager extends Pane {
         // create the obstacle
         Obstacle o = new Obstacle(xpos, ypos, width, height);
         // add the visuals
-        getChildren().add(o);
+        foreground.getChildren().add(o);
         // add to the list
         obstacles.add(o);
     }

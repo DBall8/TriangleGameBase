@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class Projectile extends Entity {
 
+    private final static int DAMAGE = 1;
+
     private final static int WIDTH = 10;
     private final static int HEIGHT = 30;
     private final static float PVELOCITY = 5; // the base velocity of a projectile
@@ -76,15 +78,22 @@ public class Projectile extends Entity {
             alive = false;
             return time;
         }
+
+        ICollidable earliestCollidedObject = null;
         for(ICollidable o: obstacles){
+            // TODO dont use instanceof
             if(o instanceof Player && ((Player)o).getID().equals(ownerID)){
                 continue;
             }
             Physics.checkObstacleCollision(this, o, time, tempCollision);
             if(tempCollision.t < earliestCollision.t){
+                earliestCollidedObject = o;
                 alive = false;
-                return time;
             }
+        }
+
+        if(earliestCollidedObject != null && earliestCollidedObject instanceof Player){
+            ((Player)earliestCollidedObject).damage(DAMAGE);
         }
         return time;
     }

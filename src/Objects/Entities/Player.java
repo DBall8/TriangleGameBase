@@ -8,6 +8,8 @@ import Objects.FireEvent.FireEventHandler;
 import Physics.Physics;
 import GameManager.UserInputListener;
 import Objects.ICollidable;
+import Visuals.HUD;
+import Visuals.PlayerUI;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,6 +29,8 @@ public class Player extends Entity implements ICollidable {
     private final static int WIDTH = 40;
     private final static int HEIGHT = 50;
 
+    public final static int MAXHEALTH = 10;
+
     private Polygon body; // The shape to use as the player's visual body
     private Rotate r; // the rotation property for rotating the visuals
     private UserInputListener input; // the object tracking user inputs
@@ -36,6 +40,9 @@ public class Player extends Entity implements ICollidable {
     private Ability primaryFire; // the primary fire ability of the player
 
     private List<Projectile> newShots = new ArrayList<>();
+
+    private PlayerUI hud;
+    private int health = MAXHEALTH;
 
     // Constructor
     public Player(String ID, int x, int y){
@@ -144,6 +151,14 @@ public class Player extends Entity implements ICollidable {
     }
 
     /**
+     * Attaches a player HUD to this player
+     */
+    public void attachHUD(PlayerUI hud){
+        this.hud = hud;
+        body.setFill(hud.getColor());
+    }
+
+    /**
      * Returns the visual object to display this player
      * @return the triangle fir displaying this player
      */
@@ -176,6 +191,19 @@ public class Player extends Entity implements ICollidable {
         }
     }
 
+    void damage(int amount){
+        if(health > 0){
+            health -= amount;
+        }
+        if(health < 0){
+            health = 0;
+        }
+
+        if(hud != null){
+            hud.notifyChanged(this);
+        }
+    }
+
     public void addNewShot(Projectile p){
         this.newShots.add(p);
     }
@@ -205,6 +233,10 @@ public class Player extends Entity implements ICollidable {
     public float topY() {
         return ypos - getYRadius();
     }
+
+    public int getHealth(){ return this.health; }
+
+    public PlayerUI getUI(){ return hud; }
 
 //    @Override
 //    public float getXRadius(){

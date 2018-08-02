@@ -5,6 +5,7 @@ import Objects.Entities.Projectile;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class ServerFrameEvent extends FrameEvent {
     private JSONObject json; // server's status as a json
     private ClientFrameEvent[] clientFrames; // an array of each player's status
     private Projectile[] newProjectiles;
+    private List<String> disconnectedIDs = new ArrayList<>();
 
     /**
      * Creates a server frame event from a players map iterator
@@ -46,9 +48,17 @@ public class ServerFrameEvent extends FrameEvent {
             JSONObject playerJson = (JSONObject)playerArray.get(i);
             clientFrames[i] = new ClientFrameEvent(playerJson);
         }
+
+        if(json.has("disconnects")){
+            JSONArray disconnIDs = json.getJSONArray("disconnects");
+            for(Object id: disconnIDs){
+                disconnectedIDs.add((String)id);
+            }
+        }
     }
 
     public ClientFrameEvent[] getClientFrames(){ return clientFrames; }
+    public List<String> getDisconnectedIDs(){ return disconnectedIDs; }
 
     @Override
     public JSONObject toJSON() {
