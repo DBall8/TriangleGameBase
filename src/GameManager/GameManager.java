@@ -360,7 +360,7 @@ public class GameManager extends Pane {
      */
     public void addProjectile(Projectile p){
         safeAdd(projectileQueue, p);
-        if(Settings.isClient()){
+        if(!Settings.isClient()){
             Player owner = players.get(p.getOwnerID());
             if(owner != null){
                 owner.addNewShot(p);

@@ -61,6 +61,14 @@ public class ClientFrameEvent extends FrameEvent {
                 newProjectiles[i] = convertJSONtoProjectile((JSONObject)newP.get(i), ID);
             }
         }
+
+        if(json.has("newHits")){
+            JSONArray newH = json.getJSONArray("newHits");
+            newHits = new HitEvent[newH.length()];
+            for(int i=0; i<newH.length(); i++){
+                newHits[i] = convertJSONtoHit((JSONObject)newH.get(i));
+            }
+        }
     }
 
     public void addHits(List<HitEvent> hits){
@@ -91,6 +99,15 @@ public class ClientFrameEvent extends FrameEvent {
             json.put("newProjectiles", newP);
         }
 
+        if(newHits != null && newHits.length > 0){
+            JSONArray newH = new JSONArray();
+            for(HitEvent hit: newHits){
+                JSONObject hJSON = convertHitToJSON(hit);
+                newH.put(hJSON);
+            }
+            json.put("newHits", newH);
+        }
+
         return json;
     }
 
@@ -119,4 +136,6 @@ public class ClientFrameEvent extends FrameEvent {
     public int getHealth(){ return health; }
 
     public Projectile[] getNewProjectiles() { return newProjectiles; }
+
+    public HitEvent[] getNewHits(){ return newHits; }
 }

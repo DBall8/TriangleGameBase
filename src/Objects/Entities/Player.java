@@ -10,6 +10,7 @@ import Physics.Physics;
 import GameManager.UserInputListener;
 import Objects.ICollidable;
 import Visuals.PlayerUI;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -202,10 +203,17 @@ public class Player extends Entity implements ICollidable {
         }
     }
 
-    void damage(int amount, int x, int y){
+    public void damage(int amount, int x, int y){
         if(health > 0){
             health -= amount;
-            new HitAnimation(visuals, x, y);
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    new HitAnimation(visuals, x, y);
+                }
+            });
+
         }
         if(health < 0){
             health = 0;
@@ -218,13 +226,17 @@ public class Player extends Entity implements ICollidable {
 
     public void updateState(float x, float y, float xvel, float yvel, float angle, int health){
         super.updateState(x, y, xvel, yvel, angle);
-        if(this.health != health){
-            hud.notifyChanged(health);
-        }
-        this.health = health;
+        updateHealth(health);
     }
 
-    public void updateHealth(int health){ this.health = health; }
+    public void updateHealth(int health){
+        if(this.health != health) {
+            this.health = health;
+            if (hud != null) {
+                hud.notifyChanged(health);
+            }
+        }
+    }
 
     public void addNewShot(Projectile p){
         this.newShots.add(p);

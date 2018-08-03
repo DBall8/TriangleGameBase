@@ -100,9 +100,10 @@ public class Projectile extends Entity {
         }
 
         if(earliestCollidedObject != null && earliestCollidedObject instanceof Player && Settings.isClient()){
-            ((Player)earliestCollidedObject).damage(DAMAGE, (int)xpos, (int)ypos);
+            Player p = (Player) earliestCollidedObject;
+            p.damage(DAMAGE, (int)xpos, (int)ypos);
             if(hitEventHandler != null){
-                hitEventHandler.handle(new HitEvent((int)xpos, (int)ypos, DAMAGE ));
+                hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, DAMAGE ));
             }
         }
         return time;
