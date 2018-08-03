@@ -36,8 +36,6 @@ public class Player extends Entity implements ICollidable {
     private Rotate r; // the rotation property for rotating the visuals
     private UserInputListener input; // the object tracking user inputs
 
-    private Rectangle debug; // a debug shape for showing the collision boundaries
-
     private PrimaryFire primaryFire; // the primary fire ability of the player
     private Boost boost;
 
@@ -47,16 +45,12 @@ public class Player extends Entity implements ICollidable {
     private int health = MAXHEALTH; // the health points of the player
     private Color color; // the color of the player
 
-    Group visuals;
-
     // Constructor
     public Player(String ID, int x, int y){
-        super(ID, x, y);
+        super(ID, x, y, WIDTH, HEIGHT);
         angle = 0;
         xvel = 20;
         yvel = 20;
-        width = WIDTH;
-        height = HEIGHT;
 
         // Build a triangle from the player's dimensions
         body = new Polygon();
@@ -66,7 +60,6 @@ public class Player extends Entity implements ICollidable {
                 (double)width, (double)height
         });
         body.setFill(Color.GREEN);
-        boundingBox = new Rectangle(width, height);
 
         // Set the pivot point (likely not needed but might want to change later)
         r = new Rotate();
@@ -74,16 +67,7 @@ public class Player extends Entity implements ICollidable {
         r.setPivotY(height/2);
 
         body.getTransforms().add(r);
-
-        visuals = new Group();
         visuals.getChildren().add(body);
-
-        if(Settings.isDebug()) {
-            debug = new Rectangle(1, 1);
-            debug.setFill(Color.TRANSPARENT);
-            debug.setStroke(Color.BLUE);
-            visuals.getChildren().add(debug);
-        }
     }
 
     /**
@@ -118,6 +102,11 @@ public class Player extends Entity implements ICollidable {
         }
         else{
             velocity = 0;
+        }
+
+        // Dont show any signs of life if dead, so stop here
+        if(health <=0){
+            return;
         }
 
         // Rotate the player towards the mouse
@@ -176,37 +165,23 @@ public class Player extends Entity implements ICollidable {
     }
 
     /**
-     * Returns the visual object to display this player
-     * @return the triangle fir displaying this player
-     */
-    @Override
-    public Node getVisuals(){
-        return visuals;
-    }
-
-    /**
      * Updates the visuals of this player
      */
     @Override
     public void draw(){
+        super.draw();
+
         // move to the correct position
-        body.setTranslateX(xpos - getXRadius());
-        body.setTranslateY(ypos - getYRadius());
+        body.setTranslateX(xpos - WIDTH/2);
+        body.setTranslateY(ypos - HEIGHT/2);
         // rotate
         r.angleProperty().set(angle);
 
-        if(Settings.isDebug()) {
-            debug.setTranslateX(xpos - getXRadius());
-            debug.setTranslateY(ypos - getYRadius());
-            debug.setWidth(getXRadius() * 2);
-            debug.setHeight(getYRadius() * 2);
-        }
+
     }
 
     public void damage(int amount, int x, int y){
         if(health > 0){
-            health -= amount;
-
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -219,9 +194,8 @@ public class Player extends Entity implements ICollidable {
             health = 0;
         }
 
-        if(hud != null){
-            hud.notifyChanged(health);
-        }
+        updateHealth(health - amount);
+
     }
 
     public void updateState(float x, float y, float xvel, float yvel, float angle, int health){
@@ -234,6 +208,10 @@ public class Player extends Entity implements ICollidable {
             this.health = health;
             if (hud != null) {
                 hud.notifyChanged(health);
+            }
+
+            if(health <= 0){
+                body.setFill(Color.GRAY);
             }
         }
     }

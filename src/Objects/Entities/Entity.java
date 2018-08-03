@@ -4,7 +4,9 @@ import Physics.Physics;
 import Global.Settings;
 import Objects.ICollidable;
 import Physics.Collision;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
@@ -21,21 +23,42 @@ public abstract class Entity {
     protected float xvel, yvel; // velocities
     protected float width, height; // dimenions
 
+    protected Group visuals;
     protected Rectangle boundingBox; // a box for detecting collisions
 
     // Objects for tracking collisions
     protected Collision tempCollision = new Collision();
     protected Collision earliestCollision = new Collision();
 
-    public Entity(String id, int x, int y){
+    public Entity(String id, int x, int y, int width, int height){
         this.ID = id;
         this.xpos = x;
         this.ypos = y;
+        this.width = width;
+        this.height = height;
+        visuals = new Group();
+
+        float average = (width + height)/2;
+
+        boundingBox = new Rectangle(average, average);
+
         reset();
+
+        if(Settings.isDebug()) {
+            boundingBox.setFill(Color.TRANSPARENT);
+            boundingBox.setStroke(Color.BLUE);
+            visuals.getChildren().add(boundingBox);
+        }
     }
 
     // For drawing the entity in the game
-    public abstract void draw();
+    public void draw(){
+        if(Settings.isDebug()){
+            boundingBox.setTranslateX(xpos - getXRadius());
+            boundingBox.setTranslateY(ypos - getYRadius());
+        }
+    }
+
     // For the initial update before each frame is calculated
     public void update(){}
 
@@ -130,7 +153,9 @@ public abstract class Entity {
 
     // Getters and setters
 
-    public abstract Node getVisuals();
+    public Group getVisuals(){
+        return visuals;
+    }
 
     public String getID(){ return ID; }
     public float getX(){ return xpos; }
@@ -139,7 +164,7 @@ public abstract class Entity {
     public float getXVel(){ return xvel; }
     public float getYVel(){ return yvel; }
     public float getVelocity(){ return (float)Math.sqrt((xvel*xvel) + (yvel * yvel));}
-    public float getXRadius(){ return width/2; }
-    public float getYRadius(){ return height/2; }
+    public float getXRadius(){ return (float)boundingBox.getWidth()/2; }
+    public float getYRadius(){ return (float)boundingBox.getHeight()/2; }
     public Rectangle getBoundingBox(){ return boundingBox; }
 }

@@ -13,7 +13,7 @@ public class Settings {
     private static int HEIGHT = 800;
 
     // If true, shows debug output
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG = true;
 
     private static boolean isClient = true;
 

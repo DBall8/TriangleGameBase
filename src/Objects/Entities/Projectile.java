@@ -26,6 +26,8 @@ public class Projectile extends Entity {
     private String ownerID; // the player that shot this projectile
     private boolean alive; // true when projectile is still traveling through the air
 
+    private Rectangle body;
+
     private EventHandler hitEventHandler;
 
     /**
@@ -33,17 +35,17 @@ public class Projectile extends Entity {
      * @param p the player who shot the projectile
      */
     public Projectile(Player p){
-        super("Proj-" + System.currentTimeMillis(), (int)p.getX(), (int)p.getY());
+        super("Proj-" + System.currentTimeMillis(), (int)p.getX(), (int)p.getY(), WIDTH, HEIGHT);
         float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
         this.angle = p.getAngle();
         this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
         this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
 
-        this.width = WIDTH;
-        this.height = HEIGHT;
         this.ownerID = p.getID();
-        boundingBox = new Rectangle(width, height);
-        boundingBox.setFill(p.getColor());
+
+        body = new Rectangle(WIDTH, HEIGHT);
+        body.setFill(p.getColor());
+        visuals.getChildren().add(body);
 
         alive = true;
     }
@@ -54,16 +56,16 @@ public class Projectile extends Entity {
      * @param ownerID the ID of the player who shot the projectile
      */
     public Projectile(String ID, String ownerID, float x, float y, float xvel, float yvel, float angle){
-        super(ID, (int)x, (int)y);
+        super(ID, (int)x, (int)y, WIDTH, HEIGHT);
         this.angle = angle;
         this.xvel = xvel;
         this.yvel = yvel;
 
-        this.width = WIDTH;
-        this.height = HEIGHT;
         this.ownerID = ownerID;
-        boundingBox = new Rectangle(width, height);
-        boundingBox.setFill(Color.RED);
+
+        body = new Rectangle(WIDTH, HEIGHT);
+        body.setFill(Color.RED);
+        visuals.getChildren().add(body);
 
         alive = true;
     }
@@ -114,20 +116,15 @@ public class Projectile extends Entity {
      */
     @Override
     public void draw() {
+        super.draw();
         if(alive) {
-            boundingBox.setTranslateX(xpos - getXRadius());
-            boundingBox.setTranslateY(ypos - getYRadius());
-            boundingBox.setRotate(angle);
+            body.setTranslateX(xpos - WIDTH/2);
+            body.setTranslateY(ypos - HEIGHT/2);
+            body.setRotate(angle);
         }
     }
 
     // Getters
-
-    @Override
-    public Node getVisuals() {
-        return boundingBox;
-    }
-
     public boolean isAlive() {
         return alive;
     }
