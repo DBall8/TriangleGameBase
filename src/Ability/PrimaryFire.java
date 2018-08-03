@@ -1,14 +1,11 @@
 package Ability;
 
 
+import Events.EventHandler;
 import Objects.Entities.Player;
 import Objects.Entities.Projectile;
-import Objects.FireEvent.FireEvent;
-import Objects.FireEvent.FireEventHandler;
-import javafx.event.EventHandler;
+import Events.FireEvent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,10 +19,10 @@ public class PrimaryFire extends Ability {
 
     private int remainingShots = 4; // for tracking how many shots are ready to be fired
     private Timer fireRateTimer = new Timer(); // an additional timer for tracking fire rate
-    private FireEventHandler feHandler; // an object for sending successful firing events to
+    private EventHandler<FireEvent> feHandler; // an object for sending successful firing events to
 
     // Constructor
-    public PrimaryFire(Player p, Scene scene, FireEventHandler feHandler){
+    public PrimaryFire(Player p, Scene scene, EventHandler<FireEvent> feHandler){
         super(p);
         this.feHandler = feHandler;
         cooldown = 1.5f; // set cooldown too 1.5(s)

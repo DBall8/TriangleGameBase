@@ -1,5 +1,6 @@
-package GameManager.FrameEvent;
+package Events.FrameEvent;
 
+import Events.HitEvent;
 import Objects.Entities.Player;
 import Objects.Entities.Projectile;
 import org.json.JSONArray;
@@ -14,7 +15,9 @@ public class ClientFrameEvent extends FrameEvent {
 
     private String ID; // the client's ID
     private float x, y, xvel, yvel, angle; // the client's player's status
+    private int health;
     private Projectile[] newProjectiles;
+    private HitEvent[] newHits;
 
     /**
      * Create a frame event from a player
@@ -27,6 +30,7 @@ public class ClientFrameEvent extends FrameEvent {
         this.xvel = p.getXVel();
         this.yvel = p.getYVel();
         this.angle = p.getAngle();
+        this.health = p.getHealth();
 
         if(p.getNewShots().size() > 0){
             this.newProjectiles = new Projectile[p.getNewShots().size()];
@@ -48,6 +52,7 @@ public class ClientFrameEvent extends FrameEvent {
         this.xvel = json.getFloat("xvel");
         this.yvel = json.getFloat("yvel");
         this.angle = json.getFloat("angle");
+        this.health = json.getInt("health");
 
         if(json.has("newProjectiles")){
             JSONArray newP = json.getJSONArray("newProjectiles");
@@ -55,6 +60,13 @@ public class ClientFrameEvent extends FrameEvent {
             for(int i=0; i<newP.length(); i++){
                 newProjectiles[i] = convertJSONtoProjectile((JSONObject)newP.get(i), ID);
             }
+        }
+    }
+
+    public void addHits(List<HitEvent> hits){
+        this.newHits = new HitEvent[hits.size()];
+        for(int i=0; i<hits.size(); i++){
+            newHits[i] = hits.get(i);
         }
     }
 
@@ -68,6 +80,7 @@ public class ClientFrameEvent extends FrameEvent {
         json.put("xvel", xvel);
         json.put("yvel", yvel);
         json.put("angle", angle);
+        json.put("health", health);
 
         if(newProjectiles != null && newProjectiles.length > 0){
             JSONArray newP = new JSONArray();
@@ -102,6 +115,8 @@ public class ClientFrameEvent extends FrameEvent {
     public float getAngle() {
         return angle;
     }
+
+    public int getHealth(){ return health; }
 
     public Projectile[] getNewProjectiles() { return newProjectiles; }
 }

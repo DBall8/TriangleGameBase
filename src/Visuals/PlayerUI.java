@@ -1,6 +1,5 @@
 package Visuals;
 
-import Ability.Boost;
 import Objects.Entities.Player;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -31,13 +30,13 @@ public class PlayerUI extends Group{
                 color = Color.BLUE;
                 break;
             case 1:
-                color = Color.PURPLE;
+                color = Color.ORANGE;
                 break;
             case 2:
-                color= Color.VIOLET;
+                color= Color.GREENYELLOW;
                 break;
             case 3:
-                color = Color.RED;
+                color = Color.PURPLE;
                 break;
             default:
 
@@ -60,11 +59,11 @@ public class PlayerUI extends Group{
         boostMeter.setFill(Color.CYAN);
         boostMeter.setTranslateY(2*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT);
 
-        getChildren().addAll(playerLabel, healthBarBG, healthBar, boostMeter);
+        getChildren().addAll(playerLabel, healthBarBG, healthBar);
     }
 
-    public void notifyChanged(Player p) {
-        double healthPercentage = (double)p.getHealth() / (double)Player.MAXHEALTH;
+    public void notifyChanged(int health) {
+        double healthPercentage = (double)health / (double)Player.MAXHEALTH;
 
         if(healthPercentage > 0.5){
             healthBar.setFill(Color.GREEN);
@@ -80,6 +79,10 @@ public class PlayerUI extends Group{
 
     public void notifyBoostChanged(double percent){
         boostMeter.setWidth(totalWidth() * percent);
+    }
+
+    public void setControlled(){
+        getChildren().add(boostMeter);
     }
 
     int totalWidth(){

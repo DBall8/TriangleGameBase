@@ -1,8 +1,10 @@
 package Objects.Entities;
 
+import Events.HitEvent;
 import Global.Settings;
 import Objects.ICollidable;
 import Physics.Physics;
+import Events.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -23,6 +25,8 @@ public class Projectile extends Entity {
 
     private String ownerID; // the player that shot this projectile
     private boolean alive; // true when projectile is still traveling through the air
+
+    private EventHandler hitEventHandler;
 
     /**
      * Constructor for brand new projectile, only differs in that it creates its own ID
@@ -47,7 +51,7 @@ public class Projectile extends Entity {
     /**
      * Constructor for a projectile that already has an ID
      * @param ID The ID of the projectile
-     * @param p the player who fired the projectile
+     * @param ownerID the ID of the player who shot the projectile
      */
     public Projectile(String ID, String ownerID, float x, float y, float xvel, float yvel, float angle){
         super(ID, (int)x, (int)y);
@@ -95,8 +99,11 @@ public class Projectile extends Entity {
             }
         }
 
-        if(earliestCollidedObject != null && earliestCollidedObject instanceof Player){
-            ((Player)earliestCollidedObject).damage(DAMAGE);
+        if(earliestCollidedObject != null && earliestCollidedObject instanceof Player && Settings.isClient()){
+            ((Player)earliestCollidedObject).damage(DAMAGE, (int)xpos, (int)ypos);
+            if(hitEventHandler != null){
+                hitEventHandler.handle(new HitEvent((int)xpos, (int)ypos, DAMAGE ));
+            }
         }
         return time;
     }
@@ -125,4 +132,10 @@ public class Projectile extends Entity {
     }
 
     public String getOwnerID(){ return ownerID; }
+
+    // Setteres
+
+    public void setHitEventHandler(EventHandler hitEventHandler){
+        this.hitEventHandler = hitEventHandler;
+    }
 }

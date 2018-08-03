@@ -1,4 +1,4 @@
-package Objects.FireEvent;
+package Events;
 
 import Objects.Entities.Projectile;
 

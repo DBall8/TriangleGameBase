@@ -1,4 +1,4 @@
-package GameManager.FrameEvent;
+package Events.FrameEvent;
 
 import Objects.Entities.Projectile;
 import org.json.JSONObject;

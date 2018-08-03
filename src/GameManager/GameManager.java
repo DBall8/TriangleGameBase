@@ -1,18 +1,20 @@
 package GameManager;
 
-import GameManager.FrameEvent.ClientFrameEvent;
-import GameManager.FrameEvent.FrameEventHandler;
-import GameManager.FrameEvent.ServerFrameEvent;
+import Events.FrameEvent.ClientFrameEvent;
+import Events.FrameEvent.FrameEvent;
+import Events.FrameEvent.ServerFrameEvent;
+import Global.Settings;
 import Objects.Entities.Entity;
+import Events.HitEvent;
 import Objects.Entities.Player;
 import Objects.Entities.Projectile;
-import Objects.FireEvent.FireEvent;
-import Objects.FireEvent.FireEventHandler;
+import Events.FireEvent;
 import Objects.ICollidable;
 import Objects.Obstacle;
 import Visuals.Background;
 import Visuals.HUD;
 import javafx.application.Platform;
+import Events.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -37,10 +39,12 @@ public class GameManager extends Pane {
 
     private Player p1; // the player being controlled
 
-    private FrameEventHandler frameHandler; // the object to pass completed frames to
+    private EventHandler<FrameEvent> frameHandler; // the object to pass completed frames to
+
+    private List<HitEvent> newHits = new ArrayList<>();
 
     // Constructor
-    public GameManager(FrameEventHandler frameHandler){
+    public GameManager(EventHandler<FrameEvent> frameHandler){
         super();
 
         background = new Background();
@@ -71,7 +75,7 @@ public class GameManager extends Pane {
         // If run by a client, set up a controllable player
         if(!asServer){
             p1 = new Player("Ply-" + System.currentTimeMillis(), 50, 50);
-            p1.initializeAsPlayer1(scene, new FireEventHandler() {
+            p1.initializeAsPlayer1(scene, new EventHandler<FireEvent>() {
                 @Override
                 public void handle(FireEvent fe) {
                     // Add bullet here
@@ -233,13 +237,19 @@ public class GameManager extends Pane {
         // Once frame is completed, trigger a frame event
 
         // Do a client frame event if this is a client game
+        FrameEvent frameEvent;
         if(p1 != null) {
-            frameHandler.handle(new ClientFrameEvent(p1));
+            frameEvent = new ClientFrameEvent(p1);
+            if(newHits.size() > 0){
+                ((ClientFrameEvent) frameEvent).addHits(newHits);
+                newHits.clear();
+            }
         }
         // Do a server frame event if this is a server game
         else{
-            frameHandler.handle(new ServerFrameEvent(players.entrySet().iterator()));
+            frameEvent = new ServerFrameEvent(players.entrySet().iterator());
         }
+        frameHandler.handle(frameEvent);
     }
 
     /**
@@ -294,7 +304,7 @@ public class GameManager extends Pane {
      * @param id the ID of the player to retreive
      * @return the player instance, or null if the player's ID is not present
      */
-    public Entity getPlayer(String id){
+    public Player getPlayer(String id){
         if(players.containsKey(id)){
             return players.get(id);
         }
@@ -332,13 +342,25 @@ public class GameManager extends Pane {
         }
     }
 
+    public void updatePlayer(String ID, float x, float y, float xvel, float yvel, float angle, int health){
+        if(players.containsKey(ID)){
+            players.get(ID).updateState(x, y, xvel, yvel, angle, health);
+        }
+    }
+
+    public void updatePlayer(String ID, int health){
+        if(players.containsKey(ID)){
+            players.get(ID).updateHealth(health);
+        }
+    }
+
     /**
      * Adds a projectile to a list of projectiles to add at the next frame
      * @param p the projectile to add
      */
     public void addProjectile(Projectile p){
         safeAdd(projectileQueue, p);
-        if(p1 == null){
+        if(Settings.isClient()){
             Player owner = players.get(p.getOwnerID());
             if(owner != null){
                 owner.addNewShot(p);
@@ -355,6 +377,13 @@ public class GameManager extends Pane {
         if(!projectiles.containsKey(p.getID())){
             projectiles.put(p.getID(), p); // put in projectiles map
             foreground.getChildren().add(p.getVisuals()); // add the visuals
+
+            p.setHitEventHandler(new EventHandler<HitEvent>() {
+                @Override
+                public void handle(HitEvent event) {
+                    newHits.add(event);
+                }
+            });
         }
 
     }

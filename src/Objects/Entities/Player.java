@@ -1,16 +1,14 @@
 package Objects.Entities;
 
-import Ability.Ability;
 import Ability.PrimaryFire;
 import Ability.Boost;
 import Animation.HitAnimation;
+import Events.EventHandler;
+import Events.FireEvent;
 import Global.Settings;
-import Objects.FireEvent.FireEvent;
-import Objects.FireEvent.FireEventHandler;
 import Physics.Physics;
 import GameManager.UserInputListener;
 import Objects.ICollidable;
-import Visuals.HUD;
 import Visuals.PlayerUI;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -42,11 +40,11 @@ public class Player extends Entity implements ICollidable {
     private PrimaryFire primaryFire; // the primary fire ability of the player
     private Boost boost;
 
-    private List<Projectile> newShots = new ArrayList<>();
+    private List<Projectile> newShots = new ArrayList<>(); // all new shots that the server has not been made aware of
 
-    private PlayerUI hud;
-    private int health = MAXHEALTH;
-    private Color color;
+    private PlayerUI hud; // The UI for this player
+    private int health = MAXHEALTH; // the health points of the player
+    private Color color; // the color of the player
 
     Group visuals;
 
@@ -92,7 +90,7 @@ public class Player extends Entity implements ICollidable {
      * @param scene the scene the player is controlled in
      * @param feHandler the fire event handler for handling ability firing
      */
-    public void initializeAsPlayer1(Scene scene, FireEventHandler feHandler){
+    public void initializeAsPlayer1(Scene scene, EventHandler<FireEvent> feHandler){
         input = new UserInputListener(scene);
         primaryFire = new PrimaryFire(this, scene, feHandler);
         boost = new Boost(this, scene);
@@ -170,6 +168,7 @@ public class Player extends Entity implements ICollidable {
         this.hud = hud;
         if(boost != null){
             boost.attachUI(hud);
+            hud.setControlled();
         }
         color = hud.getColor();
         body.setFill(color);
@@ -203,19 +202,29 @@ public class Player extends Entity implements ICollidable {
         }
     }
 
-    void damage(int amount){
+    void damage(int amount, int x, int y){
         if(health > 0){
             health -= amount;
-            new HitAnimation(visuals, (int)xpos, (int)ypos);
+            new HitAnimation(visuals, x, y);
         }
         if(health < 0){
             health = 0;
         }
 
         if(hud != null){
-            hud.notifyChanged(this);
+            hud.notifyChanged(health);
         }
     }
+
+    public void updateState(float x, float y, float xvel, float yvel, float angle, int health){
+        super.updateState(x, y, xvel, yvel, angle);
+        if(this.health != health){
+            hud.notifyChanged(health);
+        }
+        this.health = health;
+    }
+
+    public void updateHealth(int health){ this.health = health; }
 
     public void addNewShot(Projectile p){
         this.newShots.add(p);

@@ -1,5 +1,5 @@
-import GameManager.FrameEvent.FrameEvent;
-import GameManager.FrameEvent.FrameEventHandler;
+import Events.EventHandler;
+import Events.FrameEvent.FrameEvent;
 import GameManager.GameManager;
 import Global.Settings;
 import javafx.application.Application;
@@ -14,7 +14,7 @@ public class Launcher extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        GameManager game = new GameManager(new FrameEventHandler() {
+        GameManager game = new GameManager(new EventHandler<FrameEvent>() {
             @Override
             public void handle(FrameEvent fe) {
 
