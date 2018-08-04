@@ -10,9 +10,5 @@ public class Background extends Group {
 
     public Background(){
         super();
-
-        Rectangle rec = new javafx.scene.shape.Rectangle(Settings.getWindowWidth(), Settings.getWindowHeight());
-        rec.setFill(Color.BLACK);
-        //getChildren().add(rec);
     }
 }

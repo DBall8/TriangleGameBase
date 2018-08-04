@@ -17,7 +17,9 @@ import javafx.application.Platform;
 import Events.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 import java.util.*;
 
@@ -57,6 +59,8 @@ public class GameManager extends Pane {
 
         // build new Game Time
         time = new GameTime(this);
+
+        this.setBackground(new javafx.scene.layout.Background(new BackgroundFill(Color.BLACK, null, null)));
     }
 
     /**
