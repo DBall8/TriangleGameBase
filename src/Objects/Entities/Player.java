@@ -5,22 +5,21 @@ import Ability.Boost;
 import Animation.HitAnimation;
 import Events.EventHandler;
 import Events.FireEvent;
+import GameManager.UserInputHandler.InputHandler;
 import Global.Settings;
 import Physics.Physics;
-import GameManager.UserInputListener;
+import GameManager.UserInputHandler.InputHandler.Binding;
 import Objects.ICollidable;
 import Visuals.PlayerUI;
 import javafx.application.Platform;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * A class for a player entity
@@ -30,11 +29,16 @@ public class Player extends Entity implements ICollidable {
     private final static int WIDTH = 40;
     private final static int HEIGHT = 50;
 
+    private final static float MAXSPEED = 10;
+    private final static float MAXBOOSTSPEED = 20;
+    private final static float ACCEL = 0.8f;
+    private final static float RACCEL = 5;
+
     public final static int MAXHEALTH = 10;
 
     private Polygon body; // The shape to use as the player's visual body
     private Rotate r; // the rotation property for rotating the visuals
-    private UserInputListener input; // the object tracking user inputs
+    private InputHandler input; // the object tracking user inputs
 
     private PrimaryFire primaryFire; // the primary fire ability of the player
     private Boost boost;
@@ -76,7 +80,7 @@ public class Player extends Entity implements ICollidable {
      * @param feHandler the fire event handler for handling ability firing
      */
     public void initializeAsPlayer1(Scene scene, EventHandler<FireEvent> feHandler){
-        input = new UserInputListener(scene);
+        input = Settings.setUserInput(scene);
         primaryFire = new PrimaryFire(this, scene, feHandler);
         boost = new Boost(this, scene);
     }
@@ -111,35 +115,52 @@ public class Player extends Entity implements ICollidable {
 
         // Rotate the player towards the mouse
 
+        /*
         // Get the angle the mouse pointer is from the player
         double mouseAngle =180/Math.PI * Physics.findAngle(xpos, ypos, input.getMouseX(), input.getMouseY());
         // Get the amount to turn in
         double dAngle = 180/Math.PI *Math.sin((mouseAngle - angle)*Math.PI/180);
+        */
+
+        // Change in angle
+        float dAngle = 0;
+        if(input.isPressed(Binding.RIGHT)){
+            dAngle += RACCEL;
+        }
+        if(input.isPressed(Binding.LEFT))
+            dAngle -= RACCEL;
 
         angle += dAngle;
+        if(angle > 360){
+            angle -= 360;
+        }
+        else if(angle < 0){
+            angle += 360;
+        }
 
         // Update the player's velocity
 
         boolean boosting = boost.use();
 
-        float distFromMouse = Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
+        /*
+        float distFromMouse = 100; //Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
         // Only move if far enough from the mouse
         if(distFromMouse > getYRadius() * 1.5) {
-
-            // Move forward if forward key is pressed and not at max speed, also accounting for boosting
-            if (input.isUp()) {
-                if (velocity < 10) {
-                    velocity += 0.8;
-                } else if (boosting && velocity < 20) {
-                    velocity += 1;
-                }
-
+        */
+        // Move forward if forward key is pressed and not at max speed, also accounting for boosting
+        if (input.isPressed(Binding.UP)) {
+            if (velocity < MAXSPEED) {
+                velocity += ACCEL;
+            } else if (boosting && velocity < MAXBOOSTSPEED) {
+                velocity += ACCEL;
             }
-            // Move backward if the back key is presed
-            if (input.isDown() && velocity > -10) {
-                velocity -= 0.8;
-            }
+
         }
+        // Move backward if the back key is pressed
+        if (input.isPressed(Binding.DOWN) && velocity > -MAXSPEED) {
+            velocity -= ACCEL;
+        }
+        //}
 
         // convert new velocity back to its components
         float angleRads = Physics.toRadiians(angle);

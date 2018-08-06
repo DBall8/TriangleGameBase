@@ -2,6 +2,7 @@ package GameManager;
 
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
@@ -17,6 +18,11 @@ public class UserInputListener {
     private boolean left = false;
     private boolean boost = false;
     private boolean mouseDown = false;
+
+    private KeyCode upKey;
+    private KeyCode downKey;
+    private KeyCode rightKey;
+    private KeyCode leftKey;
 
     // tracks the mouse's position
     private float mousex = 0;
@@ -45,14 +51,6 @@ public class UserInputListener {
 
     public boolean isLeft() {
         return left;
-    }
-
-    public boolean isBoost() {
-        return boost;
-    }
-
-    public boolean isMouseDown() {
-        return mouseDown;
     }
 
 
@@ -131,8 +129,6 @@ public class UserInputListener {
             case D:
                 if(!right) right = true;
                 break;
-            case SPACE:
-                if(!boost) boost = true;
         }
     }
 
@@ -154,8 +150,6 @@ public class UserInputListener {
             case D:
                 right = false;
                 break;
-            case SPACE:
-                boost = false;
         }
     }
 }

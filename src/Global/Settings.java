@@ -1,5 +1,8 @@
 package Global;
 
+import GameManager.UserInputHandler.InputHandler;
+import javafx.scene.Scene;
+
 /**
  * A nested singleton class for tracking game settings
  */
@@ -16,6 +19,8 @@ public class Settings {
     private final static boolean DEBUG = false;
 
     private static boolean isClient = true;
+
+    private static InputHandler userInput;
 
     // Nested singleton
     private static class Settings_{
@@ -38,4 +43,11 @@ public class Settings {
 
     public static boolean isClient(){ return getInstance().isClient; }
     public static void setServer(){ getInstance().isClient = false; }
+
+    public static InputHandler setUserInput(Scene scene){
+        getInstance().userInput = new InputHandler(scene);
+        return getInstance().userInput;
+    }
+
+    public InputHandler getUserInputListener(){ return getInstance().userInput; }
 }
