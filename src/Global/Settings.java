@@ -1,6 +1,6 @@
 package Global;
 
-import GameManager.UserInputHandler.InputHandler;
+import GameManager.UserInputHandler.UserInputHandler;
 import javafx.scene.Scene;
 
 /**
@@ -20,7 +20,7 @@ public class Settings {
 
     private static boolean isClient = true;
 
-    private static InputHandler userInput;
+    private static UserInputHandler userInput;
 
     // Nested singleton
     private static class Settings_{
@@ -44,10 +44,10 @@ public class Settings {
     public static boolean isClient(){ return getInstance().isClient; }
     public static void setServer(){ getInstance().isClient = false; }
 
-    public static InputHandler setUserInput(Scene scene){
-        getInstance().userInput = new InputHandler(scene);
+    public static UserInputHandler setUserInput(Scene scene){
+        getInstance().userInput = new UserInputHandler(scene);
         return getInstance().userInput;
     }
 
-    public InputHandler getUserInputListener(){ return getInstance().userInput; }
+    public UserInputHandler getUserInputListener(){ return getInstance().userInput; }
 }

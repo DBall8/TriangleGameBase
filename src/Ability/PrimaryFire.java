@@ -2,10 +2,10 @@ package Ability;
 
 
 import Events.EventHandler;
+import GameManager.UserInputHandler.UserInputHandler;
 import Objects.Entities.Player;
 import Objects.Entities.Projectile;
 import Events.FireEvent;
-import javafx.scene.Scene;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,13 +22,10 @@ public class PrimaryFire extends Ability {
     private EventHandler<FireEvent> feHandler; // an object for sending successful firing events to
 
     // Constructor
-    public PrimaryFire(Player p, Scene scene, EventHandler<FireEvent> feHandler){
-        super(p);
+    public PrimaryFire(Player p, UserInputHandler.Binding binding, EventHandler<FireEvent> feHandler){
+        super(p, binding);
         this.feHandler = feHandler;
         cooldown = 1.5f; // set cooldown too 1.5(s)
-
-        // set up as a mouse click ability
-        super.setUpMouseListeners(scene);
     }
 
 
@@ -37,7 +34,7 @@ public class PrimaryFire extends Ability {
     public boolean use(){
         // Fire only if the mouse is presseed, the ability is not on cooldown, and the number of shots left is greater
         // than none
-        if(keyDown && !onCooldown && remainingShots > 0){
+        if(isPressed() && !onCooldown && remainingShots > 0){
             remainingShots--; // consume a shot
             onCooldown = true; // go onto cooldown
 

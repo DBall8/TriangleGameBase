@@ -54,6 +54,30 @@ public class Physics {
     }
 
     /**
+     * Converts an angle from radiians into degrees
+     * @param angle the angle in radiians
+     * @return the same angle but in degrees
+     */
+    public static float toDegrees(float angle){
+        return (float)(angle * 180 / Math.PI);
+    }
+
+    /**
+     * Takes an angle (in degrees) and normalizes to within the range 0 to 360
+     * @param angle the angle in degrees
+     * @return the same angle but between 0 and 360
+     */
+    public static float normalize(float angle){
+        while(angle < 0){
+            angle += 360;
+        }
+        while(angle > 360){
+            angle -= 360;
+        }
+        return angle;
+    }
+
+    /**
      * Finds the angle of the line from point 1 to point 2
      * @param x1 x coord of point 1
      * @param y1 y coord of point 1

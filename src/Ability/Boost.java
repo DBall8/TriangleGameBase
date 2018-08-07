@@ -1,9 +1,8 @@
 package Ability;
 
+import GameManager.UserInputHandler.UserInputHandler;
 import Objects.Entities.Player;
 import Visuals.PlayerUI;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 
 import java.util.TimerTask;
 
@@ -18,11 +17,9 @@ public class Boost extends Ability {
 
     private int fuel = FUELMAX;
 
-    public Boost(Player p, Scene scene){
-        super(p);
+    public Boost(Player p, UserInputHandler.Binding binding){
+        super(p, binding);
         cooldown = COOLDOWN;
-
-        setUpListeners(scene, KeyCode.SPACE);
     }
 
     public void attachUI(PlayerUI ui){
@@ -31,7 +28,7 @@ public class Boost extends Ability {
 
     @Override
     public boolean use() {
-        if(keyDown){
+        if(isPressed()){
             if(fuel > 0){
                 onCooldown = true;
                 timer.schedule(new TimerTask() {

@@ -5,10 +5,10 @@ import Ability.Boost;
 import Animation.HitAnimation;
 import Events.EventHandler;
 import Events.FireEvent;
-import GameManager.UserInputHandler.InputHandler;
+import GameManager.UserInputHandler.UserInputHandler;
 import Global.Settings;
 import Physics.Physics;
-import GameManager.UserInputHandler.InputHandler.Binding;
+import GameManager.UserInputHandler.UserInputHandler.Binding;
 import Objects.ICollidable;
 import Visuals.PlayerUI;
 import javafx.application.Platform;
@@ -36,9 +36,11 @@ public class Player extends Entity implements ICollidable {
 
     public final static int MAXHEALTH = 10;
 
+    private float velocity;
+
     private Polygon body; // The shape to use as the player's visual body
     private Rotate r; // the rotation property for rotating the visuals
-    private InputHandler input; // the object tracking user inputs
+    private UserInputHandler input; // the object tracking user inputs
 
     private PrimaryFire primaryFire; // the primary fire ability of the player
     private Boost boost;
@@ -55,6 +57,7 @@ public class Player extends Entity implements ICollidable {
         angle = 0;
         xvel = 20;
         yvel = 20;
+        velocity = 0;
 
         // Build a triangle from the player's dimensions
         body = new Polygon();
@@ -81,8 +84,8 @@ public class Player extends Entity implements ICollidable {
      */
     public void initializeAsPlayer1(Scene scene, EventHandler<FireEvent> feHandler){
         input = Settings.setUserInput(scene);
-        primaryFire = new PrimaryFire(this, scene, feHandler);
-        boost = new Boost(this, scene);
+        primaryFire = new PrimaryFire(this, Binding.SHOOT, feHandler);
+        boost = new Boost(this, Binding.BOOST);
     }
 
     /**
@@ -95,9 +98,6 @@ public class Player extends Entity implements ICollidable {
         if(input == null){
             return;
         }
-
-        // convert velocity to scalar
-        float velocity = getVelocity();
 
         // Slow the player from "friction"
         float mag = Math.abs(velocity);
@@ -157,7 +157,7 @@ public class Player extends Entity implements ICollidable {
 
         }
         // Move backward if the back key is pressed
-        if (input.isPressed(Binding.DOWN) && velocity > -MAXSPEED) {
+        if (input.isPressed(Binding.DOWN) && velocity > -MAXSPEED/2) {
             velocity -= ACCEL;
         }
         //}
@@ -272,6 +272,8 @@ public class Player extends Entity implements ICollidable {
     public PlayerUI getUI(){ return hud; }
 
     public Color getColor(){ return color; }
+
+    public UserInputHandler getInputHandler(){ return this.input; }
 
 //    @Override
 //    public float getXRadius(){

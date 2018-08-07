@@ -8,7 +8,7 @@ import javafx.scene.input.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InputHandler {
+public class UserInputHandler {
 
     public enum Binding{
         UP,
@@ -21,7 +21,7 @@ public class InputHandler {
 
     private HashMap<Binding, KeyHandler> keyMap = new HashMap<>();
 
-    public InputHandler(Scene scene){
+    public UserInputHandler(Scene scene){
 
         // Set default bindings
         keyMap.put(Binding.UP, new KeyHandler(KeyCode.W));
