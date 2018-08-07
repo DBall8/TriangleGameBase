@@ -20,7 +20,7 @@ public class Settings {
 
     private static boolean isClient = true;
 
-    private static UserInputHandler userInput;
+    private static UserInputHandler userInput = new UserInputHandler();
 
     // Nested singleton
     private static class Settings_{
@@ -44,8 +44,12 @@ public class Settings {
     public static boolean isClient(){ return getInstance().isClient; }
     public static void setServer(){ getInstance().isClient = false; }
 
-    public static UserInputHandler setUserInput(Scene scene){
-        getInstance().userInput = new UserInputHandler(scene);
+    public static UserInputHandler initializeUserInput(Scene scene){
+        getInstance().userInput.attachBindings(scene);
+        return getInstance().userInput;
+    }
+
+    public static UserInputHandler getUserInputHandler(){
         return getInstance().userInput;
     }
 

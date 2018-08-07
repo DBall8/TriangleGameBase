@@ -10,21 +10,26 @@ import java.util.Map;
 
 public class UserInputHandler {
 
+    private boolean ready = false;
+
     public enum Binding{
         UP,
         DOWN,
         RIGHT,
         LEFT,
         BOOST,
-        SHOOT
+        SHOOT,
+        ABILITY1,
+        ABILITY2
     }
 
     private HashMap<Binding, KeyHandler> keyMap = new HashMap<>();
 
-    public UserInputHandler(Scene scene){
-
+    public UserInputHandler(){
         setDefaultBindings();
+    }
 
+    public void attachBindings(Scene scene){
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -38,6 +43,8 @@ public class UserInputHandler {
                 keyUp(event);
             }
         });
+
+        ready = true;
     }
 
     /**
@@ -80,6 +87,15 @@ public class UserInputHandler {
         }
         else{
             keyMap.put(binding, new KeyHandler(key));
+        }
+    }
+
+    public String getBoundKey(Binding binding){
+        if(keyMap.containsKey(binding)){
+            return keyMap.get(binding).getKey().toString();
+        }
+        else{
+            return "Unbound";
         }
     }
 

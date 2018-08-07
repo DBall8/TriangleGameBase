@@ -17,8 +17,8 @@ public class Boost extends Ability {
 
     private int fuel = FUELMAX;
 
-    public Boost(Player p, UserInputHandler.Binding binding){
-        super(p, binding);
+    public Boost(Player p){
+        super(p, UserInputHandler.Binding.BOOST);
         cooldown = COOLDOWN;
     }
 

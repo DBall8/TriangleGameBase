@@ -83,9 +83,9 @@ public class Player extends Entity implements ICollidable {
      * @param feHandler the fire event handler for handling ability firing
      */
     public void initializeAsPlayer1(Scene scene, EventHandler<FireEvent> feHandler){
-        input = Settings.setUserInput(scene);
-        primaryFire = new PrimaryFire(this, Binding.SHOOT, feHandler);
-        boost = new Boost(this, Binding.BOOST);
+        input = Settings.initializeUserInput(scene);
+        primaryFire = new PrimaryFire(this, feHandler);
+        boost = new Boost(this);
     }
 
     /**

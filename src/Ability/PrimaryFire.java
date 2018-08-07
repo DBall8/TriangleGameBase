@@ -22,8 +22,8 @@ public class PrimaryFire extends Ability {
     private EventHandler<FireEvent> feHandler; // an object for sending successful firing events to
 
     // Constructor
-    public PrimaryFire(Player p, UserInputHandler.Binding binding, EventHandler<FireEvent> feHandler){
-        super(p, binding);
+    public PrimaryFire(Player p, EventHandler<FireEvent> feHandler){
+        super(p, UserInputHandler.Binding.BOOST);
         this.feHandler = feHandler;
         cooldown = 1.5f; // set cooldown too 1.5(s)
     }
