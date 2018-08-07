@@ -1,6 +1,7 @@
 package Objects.Entities;
 
 import Events.HitEvent;
+import GameManager.GameManager;
 import Global.Settings;
 import Objects.ICollidable;
 import Physics.Physics;
@@ -30,6 +31,8 @@ public class Projectile extends Entity {
 
     private EventHandler hitEventHandler;
 
+    private boolean p1Controlled;
+
     /**
      * Constructor for brand new projectile, only differs in that it creates its own ID
      * @param p the player who shot the projectile
@@ -48,6 +51,8 @@ public class Projectile extends Entity {
         visuals.getChildren().add(body);
 
         alive = true;
+
+        p1Controlled = true;
     }
 
     /**
@@ -68,6 +73,8 @@ public class Projectile extends Entity {
         visuals.getChildren().add(body);
 
         alive = true;
+
+        p1Controlled = false;
     }
 
     /**
@@ -101,9 +108,12 @@ public class Projectile extends Entity {
             }
         }
 
+        if(!p1Controlled) return time;
+
         if(earliestCollidedObject != null && earliestCollidedObject instanceof Player && Settings.isClient()){
             Player p = (Player) earliestCollidedObject;
             p.damage(DAMAGE, (int)xpos, (int)ypos);
+            alive = false;
             if(hitEventHandler != null){
                 hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, DAMAGE ));
             }

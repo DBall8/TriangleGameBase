@@ -21,10 +21,12 @@ public class PlayerUI extends Group{
     private Rectangle boostMeter;
 
     private Color color;
+    private short pnum;
 
     public PlayerUI(short pnum){
         super();
 
+        this.pnum = pnum;
         switch (pnum){
             case 0:
                 color = Color.BLUE;
@@ -94,4 +96,5 @@ public class PlayerUI extends Group{
     }
 
     public Color getColor(){ return color; }
+    public short getPnum(){ return pnum; }
 }

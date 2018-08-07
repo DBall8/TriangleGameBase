@@ -53,5 +53,4 @@ public class Settings {
         return getInstance().userInput;
     }
 
-    public UserInputHandler getUserInputListener(){ return getInstance().userInput; }
 }

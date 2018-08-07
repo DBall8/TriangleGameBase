@@ -2,18 +2,30 @@ package Visuals;
 
 import Global.Settings;
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class HUD extends Group {
 
     final static int COLUMNSPACE = 40;
     final static int ROWSPACE = 40;
 
+    final static int WINNERFONTSIZE = 40;
+
     private final static int MAXPLAYERS = 4;
 
     private PlayerUI[] playerUIs = new PlayerUI[]{null, null, null, null};
+    private Text winnerText;
 
     public HUD(){
         super();
+        winnerText = new Text();
+        winnerText.setFill(Color.TRANSPARENT);
+        winnerText.setFont(new Font(WINNERFONTSIZE));
+        winnerText.setTranslateX(Settings.getWindowWidth() / 2 - 100);
+        winnerText.setTranslateY(Settings.getWindowWidth() / 2);
+        getChildren().add(winnerText);
     }
 
     public PlayerUI addNewPlayerUI(){
@@ -68,5 +80,14 @@ public class HUD extends Group {
         }
 
         return -1;
+    }
+
+    public void displayWinner(short pnum, Color color){
+        winnerText.setText("Player " + (pnum+1) + " wins!");
+        winnerText.setFill(color);
+    }
+
+    public void removeWinner(){
+        winnerText.setFill(Color.TRANSPARENT);
     }
 }

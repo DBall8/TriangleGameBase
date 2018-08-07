@@ -23,7 +23,7 @@ public class PrimaryFire extends Ability {
 
     // Constructor
     public PrimaryFire(Player p, EventHandler<FireEvent> feHandler){
-        super(p, UserInputHandler.Binding.BOOST);
+        super(p, UserInputHandler.Binding.SHOOT);
         this.feHandler = feHandler;
         cooldown = 1.5f; // set cooldown too 1.5(s)
     }

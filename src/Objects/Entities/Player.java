@@ -10,11 +10,14 @@ import Global.Settings;
 import Physics.Physics;
 import GameManager.UserInputHandler.UserInputHandler.Binding;
 import Objects.ICollidable;
+import Visuals.Aimer;
 import Visuals.PlayerUI;
 import javafx.application.Platform;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
@@ -26,19 +29,22 @@ import java.util.List;
  */
 public class Player extends Entity implements ICollidable {
 
-    private final static int WIDTH = 40;
-    private final static int HEIGHT = 50;
+    public final static int WIDTH = 40;
+    public final static int HEIGHT = 50;
 
     private final static float MAXSPEED = 10;
     private final static float MAXBOOSTSPEED = 20;
     private final static float ACCEL = 0.8f;
-    private final static float RACCEL = 5;
+    private final static float AIMRACCEL = 2;
+    private final static float RACCEL = 4;
 
     public final static int MAXHEALTH = 10;
 
     private float velocity;
 
+    private Group bodyGroup;
     private Polygon body; // The shape to use as the player's visual body
+    private Aimer aimer;
     private Rotate r; // the rotation property for rotating the visuals
     private UserInputHandler input; // the object tracking user inputs
 
@@ -51,15 +57,22 @@ public class Player extends Entity implements ICollidable {
     private int health = MAXHEALTH; // the health points of the player
     private Color color; // the color of the player
 
+    private int spawnx, spawny;
+    private float spawnAngle;
+
     // Constructor
-    public Player(String ID, int x, int y){
+    public Player(String ID, int x, int y, float angle){
         super(ID, x, y, WIDTH, HEIGHT);
-        angle = 0;
+        spawnx = x;
+        spawny = y;
+        spawnAngle = angle;
+        this.angle = angle;
         xvel = 20;
         yvel = 20;
         velocity = 0;
 
         // Build a triangle from the player's dimensions
+        bodyGroup = new Group();
         body = new Polygon();
         body.getPoints().addAll(new Double[]{
                 (double)width/2, 0.0,
@@ -73,8 +86,9 @@ public class Player extends Entity implements ICollidable {
         r.setPivotX(width/2);
         r.setPivotY(height/2);
 
-        body.getTransforms().add(r);
-        visuals.getChildren().add(body);
+        bodyGroup.getChildren().add(body);
+        bodyGroup.getTransforms().add(r);
+        visuals.getChildren().add(bodyGroup);
     }
 
     /**
@@ -125,10 +139,21 @@ public class Player extends Entity implements ICollidable {
         // Change in angle
         float dAngle = 0;
         if(input.isPressed(Binding.RIGHT)){
-            dAngle += RACCEL;
+            if(input.isPressed(Binding.AIM)){
+                dAngle += AIMRACCEL;
+            }
+            else{
+                dAngle += RACCEL;
+            }
+
         }
-        if(input.isPressed(Binding.LEFT))
-            dAngle -= RACCEL;
+        if(input.isPressed(Binding.LEFT)) {
+            if (input.isPressed(Binding.AIM)) {
+                dAngle -= AIMRACCEL;
+            } else {
+                dAngle -= RACCEL;
+            }
+        }
 
         angle += dAngle;
         if(angle > 360){
@@ -182,6 +207,8 @@ public class Player extends Entity implements ICollidable {
             hud.setControlled();
         }
         color = hud.getColor();
+        aimer = new Aimer(color);
+        bodyGroup.getChildren().add(aimer);
         body.setFill(color);
     }
 
@@ -193,10 +220,19 @@ public class Player extends Entity implements ICollidable {
         super.draw();
 
         // move to the correct position
-        body.setTranslateX(xpos - WIDTH/2);
-        body.setTranslateY(ypos - HEIGHT/2);
+        bodyGroup.setTranslateX(xpos - WIDTH/2);
+        bodyGroup.setTranslateY(ypos - HEIGHT/2);
         // rotate
         r.angleProperty().set(angle);
+
+        if(aimer == null || input == null){
+            return;
+        }
+        if(input.isPressed(Binding.AIM)){
+            aimer.show();
+        } else{
+            aimer.hide();
+        }
 
 
     }
@@ -235,6 +271,22 @@ public class Player extends Entity implements ICollidable {
                 body.setFill(Color.GRAY);
             }
         }
+    }
+
+    public void setSpawn(int x, int y, float angle){
+        spawnx = x;
+        spawny = y;
+        spawnAngle = angle;
+    }
+
+    public void revive(){
+        //xpos = spawnx;
+        //ypos = spawny;
+        health = MAXHEALTH;
+        //velocity = xvel = yvel = 0;
+        //angle = spawnAngle;
+        body.setFill(hud.getColor());
+        hud.notifyChanged(health);
     }
 
     public void addNewShot(Projectile p){

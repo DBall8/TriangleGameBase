@@ -18,10 +18,13 @@ public class UserInputHandler {
         RIGHT,
         LEFT,
         BOOST,
+        AIM,
         SHOOT,
         ABILITY1,
         ABILITY2
     }
+
+    private KeyCode[] unavailableKeys = {KeyCode.ESCAPE};
 
     private HashMap<Binding, KeyHandler> keyMap = new HashMap<>();
 
@@ -52,6 +55,7 @@ public class UserInputHandler {
      * @param ke the key event
      */
     private void keyDown(KeyEvent ke){
+
         for (Map.Entry<Binding, KeyHandler> entry : keyMap.entrySet())
         {
             KeyHandler key = entry.getValue();
@@ -82,6 +86,9 @@ public class UserInputHandler {
     }
 
     public void setBinding(Binding binding, KeyCode key){
+        if(isKeyUnavailable(key)){
+            return;
+        }
         if(keyMap.containsKey(binding)){
             keyMap.get(binding).setKey(key);
         }
@@ -99,6 +106,15 @@ public class UserInputHandler {
         }
     }
 
+    private boolean isKeyUnavailable(KeyCode key){
+        for(KeyCode k: unavailableKeys){
+            if(k == key){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void setDefaultBindings(){
         // Set default bindings
         keyMap.put(Binding.UP, new KeyHandler(KeyCode.W));
@@ -106,6 +122,7 @@ public class UserInputHandler {
         keyMap.put(Binding.RIGHT, new KeyHandler(KeyCode.D));
         keyMap.put(Binding.LEFT, new KeyHandler(KeyCode.A));
         keyMap.put(Binding.BOOST, new KeyHandler(KeyCode.SPACE));
-        keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.UP));
+        keyMap.put(Binding.AIM, new KeyHandler(KeyCode.LEFT));
+        keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.DOWN));
     }
 }

@@ -3,6 +3,7 @@ package GameManager;
 import Events.FrameEvent.ClientFrameEvent;
 import Events.FrameEvent.FrameEvent;
 import Events.FrameEvent.ServerFrameEvent;
+import Events.GameEndEvent;
 import Global.Settings;
 import Objects.Entities.Entity;
 import Events.HitEvent;
@@ -42,6 +43,7 @@ public class GameManager extends Pane {
     private Player p1; // the player being controlled
 
     private EventHandler<FrameEvent> frameHandler; // the object to pass completed frames to
+    private EventHandler<GameEndEvent> gameEndHandler; // Object to pass game completion to
 
     private List<HitEvent> newHits = new ArrayList<>();
 
@@ -78,7 +80,7 @@ public class GameManager extends Pane {
     public void start(Scene scene, boolean asServer){
         // If run by a client, set up a controllable player
         if(!asServer){
-            p1 = new Player("Ply-" + System.currentTimeMillis(), 50, 50);
+            p1 = new Player("Ply-" + System.currentTimeMillis(), 50, 50, 90);
             p1.initializeAsPlayer1(scene, new EventHandler<FireEvent>() {
                 @Override
                 public void handle(FireEvent fe) {
@@ -237,6 +239,12 @@ public class GameManager extends Pane {
             timeLeft -= firstCollisionTime;
 
         }while(timeLeft > 0.01f);
+
+        Player winner;
+        if((winner = getWinner()) != null && gameEndHandler != null){
+            hud.displayWinner(winner.getUI().getPnum(), winner.getColor());
+            gameEndHandler.handle(new GameEndEvent());
+        }
 
         // Once frame is completed, trigger a frame event
 
@@ -447,6 +455,48 @@ public class GameManager extends Pane {
         else{
             return "";
         }
+    }
+
+    public Player getWinner(){
+        int numAlivePlayers = 0;
+        Player potentialWinner = null;
+        for(Map.Entry<String, Player> pair: players.entrySet()){
+            if(pair.getValue().getHealth() > 0){
+                potentialWinner = pair.getValue();
+                numAlivePlayers++;
+            }
+        }
+
+        if(numAlivePlayers == 1 && players.size() > 1){
+            return potentialWinner;
+        }
+        else{
+            return null;
+        }
+    }
+
+    public void pause(){
+        time.pause();
+    }
+
+    public void play(){
+        time.play();
+    }
+
+    public void reset(){
+        for(Map.Entry<String, Player> entry: players.entrySet()){
+            entry.getValue().revive();
+        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                hud.removeWinner();
+            }
+        });
+    }
+
+    public void setGameEndHandler(EventHandler<GameEndEvent> gameEndHandler){
+        this.gameEndHandler = gameEndHandler;
     }
 
 }
