@@ -14,6 +14,11 @@ public class KeyHandler {
 
     KeyCode getKey(){ return key; }
 
+    void setKey(KeyCode key){
+        this.key = key;
+        isPressed = false;
+    }
+
     boolean isPressed(){ return isPressed; }
     void setPressed(boolean isPressed){ this.isPressed = isPressed; }
 }

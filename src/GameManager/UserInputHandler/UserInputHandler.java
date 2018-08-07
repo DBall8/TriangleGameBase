@@ -23,14 +23,7 @@ public class UserInputHandler {
 
     public UserInputHandler(Scene scene){
 
-        // Set default bindings
-        keyMap.put(Binding.UP, new KeyHandler(KeyCode.W));
-        keyMap.put(Binding.DOWN, new KeyHandler(KeyCode.S));
-        keyMap.put(Binding.RIGHT, new KeyHandler(KeyCode.D));
-        keyMap.put(Binding.LEFT, new KeyHandler(KeyCode.A));
-        keyMap.put(Binding.BOOST, new KeyHandler(KeyCode.SPACE));
-        keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.UP));
-
+        setDefaultBindings();
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -79,5 +72,24 @@ public class UserInputHandler {
 
     public boolean isPressed(Binding binding){
         return keyMap.get(binding).isPressed();
+    }
+
+    public void setBinding(Binding binding, KeyCode key){
+        if(keyMap.containsKey(binding)){
+            keyMap.get(binding).setKey(key);
+        }
+        else{
+            keyMap.put(binding, new KeyHandler(key));
+        }
+    }
+
+    private void setDefaultBindings(){
+        // Set default bindings
+        keyMap.put(Binding.UP, new KeyHandler(KeyCode.W));
+        keyMap.put(Binding.DOWN, new KeyHandler(KeyCode.S));
+        keyMap.put(Binding.RIGHT, new KeyHandler(KeyCode.D));
+        keyMap.put(Binding.LEFT, new KeyHandler(KeyCode.A));
+        keyMap.put(Binding.BOOST, new KeyHandler(KeyCode.SPACE));
+        keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.UP));
     }
 }
