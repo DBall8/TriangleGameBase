@@ -21,7 +21,8 @@ public class UserInputHandler {
         AIM,
         SHOOT,
         ABILITY1,
-        ABILITY2
+        ABILITY2,
+        SEKRIT
     }
 
     private KeyCode[] unavailableKeys = {KeyCode.ESCAPE};
@@ -126,5 +127,7 @@ public class UserInputHandler {
         keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.LEFT));
         keyMap.put(Binding.ABILITY1, new KeyHandler(KeyCode.RIGHT));
         keyMap.put(Binding.ABILITY2, new KeyHandler(KeyCode.UP));
+
+        keyMap.put(Binding.SEKRIT, new KeyHandler(KeyCode.CONTROL));
     }
 }

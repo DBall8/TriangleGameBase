@@ -12,6 +12,7 @@ import Objects.Entities.Projectile;
 import Events.FireEvent;
 import Objects.ICollidable;
 import Objects.Obstacle;
+import Physics.Physics;
 import Visuals.Background;
 import Visuals.HUD;
 import javafx.application.Platform;
@@ -21,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.util.*;
 
@@ -85,6 +87,13 @@ public class GameManager extends Pane {
                 @Override
                 public void handle(FireEvent fe) {
                     // Add bullet here
+//                    if(fe.type.equals("hitscan")){
+//                        Rectangle r = new Rectangle(4, Physics.getClosestLOSPoint(p1.getX(), p1.getY(), p1.getAngle(), obstacles));
+//                        r.setTranslateX(Player.WIDTH/2 - r.getWidth()/2);
+//                        r.setTranslateY(Player.HEIGHT/2 - r.getHeight());
+//                        r.setFill(Color.RED);
+//                        p1.getBodyGroup().getChildren().add(r);
+//                    }
                     enterProjectile(fe.projectile);
                     p1.addNewShot(fe.projectile);
                 }

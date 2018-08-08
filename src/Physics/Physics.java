@@ -1,7 +1,10 @@
 package Physics;
 
+import Global.Settings;
 import Objects.Entities.Entity;
 import Objects.ICollidable;
+
+import java.util.List;
 
 /**
  * A class full of static methods for mathematical calculations
@@ -26,7 +29,7 @@ public class Physics {
     /**
      * Reduces a vector into its x component
      * @param mag the magnitude of the vector
-     * @param angle the angle of the vector
+     * @param angle the angle of the vector in radiians
      * @return the x component of the vector
      */
     public static float xComponent(float mag, float angle){
@@ -37,7 +40,7 @@ public class Physics {
     /**
      * Reduces a vector into its y component
      * @param mag the magnitude of the vector
-     * @param angle the angle of the vector
+     * @param angle the angle of the vector in radiians
      * @return the y component of the vector
      */
     public static float yComponent(float mag, float angle){
@@ -303,4 +306,77 @@ public class Physics {
         C.copy(tempC);
 
     }
+
+    public static float getClosestLOSPoint(float startx, float starty, float angle, List<ICollidable> collidables){
+        float a = Settings.getWindowWidth();
+        float b = Settings.getWindowHeight();
+        float screenDiagonal =  (float)Math.sqrt((a*a) + (b*b));
+
+        Line los = new Line(startx, starty, angle, screenDiagonal, true);
+
+        float closestLosDist = screenDiagonal;
+        float temp;
+        for(ICollidable collidable: collidables){
+            if((temp = getLOSDist(startx, starty, los, collidable)) < closestLosDist){
+                closestLosDist = temp;
+            }
+        }
+
+        return closestLosDist;
+    }
+
+    public static float getLOSDist(float startx, float starty, Line los, ICollidable collidable){
+
+        float closestIntersection = Float.MAX_VALUE;
+
+        Line topLine = new Line(collidable.leftX(), collidable.topY(), collidable.rightX(), collidable.topY()); // top line
+        Line bottomLine = new Line(collidable.leftX(), collidable.bottomY(), collidable.rightX(), collidable.bottomY()); // bottom line
+        Line leftLine = new Line(collidable.leftX(), collidable.topY(), collidable.leftX(), collidable.bottomY()); // left line
+        Line rightLine = new Line(collidable.rightX(), collidable.topY(), collidable.rightX(), collidable.bottomY()); // right line
+
+        float dist;
+        if(los.isHorizontal()){
+            if(los.intersects(rightLine)){
+                dist = Math.abs(starty - topLine.p1.y);
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+            if(los.intersects(topLine)){
+                dist = Math.abs(starty - topLine.p1.y);
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+        }
+        else if(los.isVertical()){
+            if(los.intersects(topLine)){
+                dist = Math.abs(starty - topLine.p1.y);
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+            if(los.intersects(bottomLine)){
+                dist = Math.abs(starty - topLine.p1.y);
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+        }
+        else{
+            if(los.intersects(topLine)){
+                dist = Physics.getDistance(startx, starty, los.getXAt(topLine.p1.y), topLine.p1.y);
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+            if(los.intersects(bottomLine)){
+                dist = Physics.getDistance(startx, starty, los.getXAt(bottomLine.p1.y), topLine.p1.y);
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+            if(los.intersects(rightLine)){
+                dist = Physics.getDistance(startx, starty, rightLine.p1.x, los.getYAt(rightLine.p1.x));
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+            if(los.intersects(leftLine)){
+                dist = Physics.getDistance(startx, starty, leftLine.p1.x, los.getYAt(leftLine.p1.x));
+                if(dist < closestIntersection) closestIntersection = dist;
+            }
+        }
+
+
+
+        return closestIntersection;
+    }
+
 }

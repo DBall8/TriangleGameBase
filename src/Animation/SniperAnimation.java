@@ -1,6 +1,7 @@
 package Animation;
 
 import Objects.Entities.Player;
+import Physics.Physics;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -17,11 +18,11 @@ public class SniperAnimation extends Animation {
 
     private Rectangle shotLine;
 
-    public SniperAnimation(Color c) {
+    public SniperAnimation(Player p) {
         super(DURATION);
 
         shotLine = new Rectangle(STARTWIDTH, LENGTH);
-        shotLine.setFill(c);
+        shotLine.setFill(p.getColor());
         shotLine.setTranslateX((Player.WIDTH/2) - (shotLine.getWidth()/2));
         shotLine.setTranslateY((Player.HEIGHT/2) - (LENGTH));
         getChildren().add(shotLine);

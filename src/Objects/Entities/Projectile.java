@@ -23,7 +23,7 @@ public class Projectile extends Entity {
     private final static int WIDTH = 10;
     private final static int HEIGHT = 30;
     private final static float PVELOCITY = 10; // the base velocity of a projectile
-    private final static float MOVEFACTOR = 0.2f; // the percentage of the player's speed to add to the projectile speed
+    private final static float MOVEFACTOR = 0.9f; // the percentage of the player's speed to add to the projectile speed
 
     private String ownerID; // the player that shot this projectile
     private boolean alive; // true when projectile is still traveling through the air
@@ -40,7 +40,14 @@ public class Projectile extends Entity {
      */
     public Projectile(Player p){
         super("Proj-" + System.currentTimeMillis(), (int)p.getX(), (int)p.getY(), WIDTH, HEIGHT);
-        float pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
+
+        float pvel;
+        if(p.getVelocity() > 0){
+            pvel = p.getVelocity() * MOVEFACTOR + PVELOCITY;
+        }
+        else{
+            pvel = PVELOCITY;
+        }
         this.angle = p.getAngle();
         this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
         this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));

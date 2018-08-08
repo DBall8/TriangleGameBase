@@ -9,7 +9,10 @@ import Objects.Entities.Projectile;
 public class FireEvent {
 
     public Projectile projectile;
-    public FireEvent(Projectile p){
+    public String type;
+
+    public FireEvent(Projectile p, String type){
+        this.type = type;
         this.projectile = p;
     }
 }

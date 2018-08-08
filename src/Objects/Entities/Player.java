@@ -52,6 +52,7 @@ public class Player extends Entity implements ICollidable {
     private Boost boost;
     private Ability ability1;
     private Ability ability2;
+    private Ability sekrit;
 
     private boolean moveDisabled = false;
 
@@ -104,7 +105,8 @@ public class Player extends Entity implements ICollidable {
         input = Settings.initializeUserInput(scene);
         primaryFire = new PrimaryFire(this, feHandler);
         boost = new Boost(this);
-        ability1 = new Sniper(this);
+        ability1 = new Sniper(this, feHandler);
+        sekrit = new SekritAbility(this, feHandler);
     }
 
     /**
@@ -197,6 +199,7 @@ public class Player extends Entity implements ICollidable {
         // attempt to use all abilities
         primaryFire.use();
         ability1.use();
+        sekrit.use();
 
     }
 
@@ -293,6 +296,8 @@ public class Player extends Entity implements ICollidable {
             }
         });
     }
+
+    public Group getBodyGroup(){ return bodyGroup; }
 
     public void addNewShot(Projectile p){
         this.newShots.add(p);
