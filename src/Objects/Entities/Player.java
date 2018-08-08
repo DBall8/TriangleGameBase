@@ -1,8 +1,7 @@
 package Objects.Entities;
 
-import Ability.PrimaryFire;
-import Ability.Boost;
-import Animation.HitAnimation;
+import Ability.*;
+import Animation.Animation;
 import Events.EventHandler;
 import Events.FireEvent;
 import GameManager.UserInputHandler.UserInputHandler;
@@ -17,7 +16,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
@@ -35,8 +33,10 @@ public class Player extends Entity implements ICollidable {
     private final static float MAXSPEED = 10;
     private final static float MAXBOOSTSPEED = 20;
     private final static float ACCEL = 0.8f;
-    private final static float AIMRACCEL = 2;
     private final static float RACCEL = 4;
+    private final static float BOOSTRACCEL = 6;
+    private final static float AIMRACCEL = 2;
+
 
     public final static int MAXHEALTH = 10;
 
@@ -50,6 +50,10 @@ public class Player extends Entity implements ICollidable {
 
     private PrimaryFire primaryFire; // the primary fire ability of the player
     private Boost boost;
+    private Ability ability1;
+    private Ability ability2;
+
+    private boolean moveDisabled = false;
 
     private List<Projectile> newShots = new ArrayList<>(); // all new shots that the server has not been made aware of
 
@@ -100,6 +104,7 @@ public class Player extends Entity implements ICollidable {
         input = Settings.initializeUserInput(scene);
         primaryFire = new PrimaryFire(this, feHandler);
         boost = new Boost(this);
+        ability1 = new Sniper(this);
     }
 
     /**
@@ -127,6 +132,8 @@ public class Player extends Entity implements ICollidable {
             return;
         }
 
+        boolean boosting = boost.use();
+
         // Rotate the player towards the mouse
 
         /*
@@ -138,24 +145,21 @@ public class Player extends Entity implements ICollidable {
 
         // Change in angle
         float dAngle = 0;
+        if (input.isPressed(Binding.AIM)) {
+            dAngle = AIMRACCEL;
+        } else if(boosting){
+            dAngle = BOOSTRACCEL;
+        }
+        else{
+            dAngle = RACCEL;
+        }
         if(input.isPressed(Binding.RIGHT)){
-            if(input.isPressed(Binding.AIM)){
-                dAngle += AIMRACCEL;
-            }
-            else{
-                dAngle += RACCEL;
-            }
-
+            angle += dAngle;
         }
         if(input.isPressed(Binding.LEFT)) {
-            if (input.isPressed(Binding.AIM)) {
-                dAngle -= AIMRACCEL;
-            } else {
-                dAngle -= RACCEL;
-            }
+            angle -= dAngle;
         }
 
-        angle += dAngle;
         if(angle > 360){
             angle -= 360;
         }
@@ -165,15 +169,13 @@ public class Player extends Entity implements ICollidable {
 
         // Update the player's velocity
 
-        boolean boosting = boost.use();
-
         /*
         float distFromMouse = 100; //Physics.getDistance(xpos, ypos, input.getMouseX(), input.getMouseY());
         // Only move if far enough from the mouse
         if(distFromMouse > getYRadius() * 1.5) {
         */
         // Move forward if forward key is pressed and not at max speed, also accounting for boosting
-        if (input.isPressed(Binding.UP)) {
+        if ((input.isPressed(Binding.UP) || boosting) && !moveDisabled) {
             if (velocity < MAXSPEED) {
                 velocity += ACCEL;
             } else if (boosting && velocity < MAXBOOSTSPEED) {
@@ -182,7 +184,7 @@ public class Player extends Entity implements ICollidable {
 
         }
         // Move backward if the back key is pressed
-        if (input.isPressed(Binding.DOWN) && velocity > -MAXSPEED/2) {
+        if (input.isPressed(Binding.DOWN) && velocity > -MAXSPEED/2 && !moveDisabled) {
             velocity -= ACCEL;
         }
         //}
@@ -194,6 +196,7 @@ public class Player extends Entity implements ICollidable {
 
         // attempt to use all abilities
         primaryFire.use();
+        ability1.use();
 
     }
 
@@ -237,22 +240,8 @@ public class Player extends Entity implements ICollidable {
 
     }
 
-    public void damage(int amount, int x, int y){
-        if(health > 0){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    new HitAnimation(visuals, x, y);
-                }
-            });
-
-        }
-        if(health < 0){
-            health = 0;
-        }
-
+    public void damage(int amount){
         updateHealth(health - amount);
-
     }
 
     public void updateState(float x, float y, float xvel, float yvel, float angle, int health){
@@ -266,7 +255,9 @@ public class Player extends Entity implements ICollidable {
             if (hud != null) {
                 hud.notifyChanged(health);
             }
-
+            if(health < 0){
+                health = 0;
+            }
             if(health <= 0){
                 body.setFill(Color.GRAY);
             }
@@ -289,6 +280,20 @@ public class Player extends Entity implements ICollidable {
         hud.notifyChanged(health);
     }
 
+    public void addAnimation(Animation a, boolean attachedToPlayer){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(attachedToPlayer){
+                    a.start(bodyGroup);
+                } else{
+                    a.start(visuals);
+                }
+
+            }
+        });
+    }
+
     public void addNewShot(Projectile p){
         this.newShots.add(p);
     }
@@ -296,6 +301,9 @@ public class Player extends Entity implements ICollidable {
     public List<Projectile> getNewShots(){ return newShots; }
 
     public void clearNewShots(){ newShots.clear(); }
+
+    public void disableMovement(){ moveDisabled = true; }
+    public void enableMovement(){ moveDisabled = false; }
 
     // Getters
 
@@ -326,6 +334,8 @@ public class Player extends Entity implements ICollidable {
     public Color getColor(){ return color; }
 
     public UserInputHandler getInputHandler(){ return this.input; }
+
+    public float getVelocity(){ return velocity; }
 
 //    @Override
 //    public float getXRadius(){

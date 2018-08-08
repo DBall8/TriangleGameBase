@@ -1,5 +1,6 @@
 package Objects.Entities;
 
+import Animation.HitAnimation;
 import Events.HitEvent;
 import GameManager.GameManager;
 import Global.Settings;
@@ -21,8 +22,8 @@ public class Projectile extends Entity {
 
     private final static int WIDTH = 10;
     private final static int HEIGHT = 30;
-    private final static float PVELOCITY = 5; // the base velocity of a projectile
-    private final static float MOVEFACTOR = 0.9f; // the percentage of the player's speed to add to the projectile speed
+    private final static float PVELOCITY = 10; // the base velocity of a projectile
+    private final static float MOVEFACTOR = 0.2f; // the percentage of the player's speed to add to the projectile speed
 
     private String ownerID; // the player that shot this projectile
     private boolean alive; // true when projectile is still traveling through the air
@@ -108,15 +109,17 @@ public class Projectile extends Entity {
             }
         }
 
-        if(!p1Controlled) return time;
-
         if(earliestCollidedObject != null && earliestCollidedObject instanceof Player && Settings.isClient()){
             Player p = (Player) earliestCollidedObject;
-            p.damage(DAMAGE, (int)xpos, (int)ypos);
-            alive = false;
-            if(hitEventHandler != null){
-                hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, DAMAGE ));
+            if(p1Controlled) {
+                p.damage(DAMAGE);
+                if(hitEventHandler != null){
+                    hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, DAMAGE ));
+                }
             }
+            p.addAnimation(new HitAnimation((int)xpos, (int)ypos), false);
+            alive = false;
+
         }
         return time;
     }
@@ -141,7 +144,7 @@ public class Projectile extends Entity {
 
     public String getOwnerID(){ return ownerID; }
 
-    // Setteres
+    // Setters
 
     public void setHitEventHandler(EventHandler hitEventHandler){
         this.hitEventHandler = hitEventHandler;

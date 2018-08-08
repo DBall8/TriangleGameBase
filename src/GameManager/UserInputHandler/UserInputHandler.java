@@ -122,7 +122,9 @@ public class UserInputHandler {
         keyMap.put(Binding.RIGHT, new KeyHandler(KeyCode.D));
         keyMap.put(Binding.LEFT, new KeyHandler(KeyCode.A));
         keyMap.put(Binding.BOOST, new KeyHandler(KeyCode.SPACE));
-        keyMap.put(Binding.AIM, new KeyHandler(KeyCode.LEFT));
-        keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.DOWN));
+        keyMap.put(Binding.AIM, new KeyHandler(KeyCode.DOWN));
+        keyMap.put(Binding.SHOOT, new KeyHandler(KeyCode.LEFT));
+        keyMap.put(Binding.ABILITY1, new KeyHandler(KeyCode.RIGHT));
+        keyMap.put(Binding.ABILITY2, new KeyHandler(KeyCode.UP));
     }
 }

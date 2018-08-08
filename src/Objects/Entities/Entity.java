@@ -163,7 +163,7 @@ public abstract class Entity {
     public float getAngle(){ return angle; }
     public float getXVel(){ return xvel; }
     public float getYVel(){ return yvel; }
-    public float getVelocity(){ return (float)Math.sqrt((xvel*xvel) + (yvel * yvel));}
+    //public float getVelocity(){ return (float)Math.sqrt((xvel*xvel) + (yvel * yvel));}
     public float getXRadius(){ return (float)boundingBox.getWidth()/2; }
     public float getYRadius(){ return (float)boundingBox.getHeight()/2; }
     public Rectangle getBoundingBox(){ return boundingBox; }

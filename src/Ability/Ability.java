@@ -4,6 +4,7 @@ import GameManager.UserInputHandler.UserInputHandler;
 import Objects.Entities.Player;
 
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A class for handling player abilities
@@ -33,7 +34,23 @@ public abstract class Ability {
         return userInputHandler.isPressed(binding);
     }
 
-    // Function for using the ability
-    public abstract boolean use();
+    protected void goOnCooldown(){
+        onCooldown = true;
+        // come off of cooldown after a little time
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                onCooldown = false;
+            }
+        }, (int)(cooldown * 1000));
+    }
+
+    public boolean use() {
+        if(!onCooldown && isPressed()){
+            goOnCooldown();
+            return true;
+        }
+        return false;
+    }
 
 }

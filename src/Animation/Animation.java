@@ -14,18 +14,30 @@ public abstract class Animation extends Group {
     private Timeline timeline;
     private Group g;
 
-    public Animation(Group g){
+    protected int cycleCount;
+
+    protected EventHandler<ActionEvent> eventHandler;
+
+    public Animation(int time){
         super();
-        this.g = g;
-        g.getChildren().add(this);
         timeline = new Timeline();
+        cycleCount = (int)(time / RESOLUTION);
 
     }
 
-    public void start(int time, EventHandler event){
-        int cycleCount = (int)(time / RESOLUTION);
+    protected void setFrameEvent(EventHandler<ActionEvent> eventHandler){
+        this.eventHandler = eventHandler;
+    }
+
+    public void start(Group g){
+
+        if(eventHandler == null) return;
+
+        this.g = g;
+        g.getChildren().add(this);
+
         timeline.setCycleCount(cycleCount);
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(RESOLUTION), event);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(RESOLUTION), eventHandler);
         timeline.getKeyFrames().add(keyFrame);
 
         Animation a = this;

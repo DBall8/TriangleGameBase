@@ -29,7 +29,7 @@ public class PlayerUI extends Group{
         this.pnum = pnum;
         switch (pnum){
             case 0:
-                color = Color.BLUE;
+                color = Color.LIGHTBLUE;
                 break;
             case 1:
                 color = Color.ORANGE;
@@ -38,7 +38,7 @@ public class PlayerUI extends Group{
                 color= Color.GREENYELLOW;
                 break;
             case 3:
-                color = Color.PURPLE;
+                color = Color.LIGHTCORAL;
                 break;
             default:
 

@@ -8,10 +8,11 @@ import javafx.scene.shape.Circle;
 
 public class HitAnimation extends Animation {
 
+    private final static int DURATION = 200; // ms
     Circle circle;
 
-    public HitAnimation(Group g, int x, int y) {
-        super(g);
+    public HitAnimation(int x, int y) {
+        super(DURATION);
 
         circle = new Circle(5);
         circle.setTranslateX(x);
@@ -20,7 +21,7 @@ public class HitAnimation extends Animation {
 
         getChildren().add(circle);
 
-        super.start(200, new EventHandler() {
+        super.setFrameEvent(new EventHandler() {
             @Override
             public void handle(Event event) {
                 circle.setRadius(circle.getRadius() + 1);
