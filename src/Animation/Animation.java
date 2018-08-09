@@ -21,7 +21,12 @@ public abstract class Animation extends Group {
     public Animation(int time){
         super();
         timeline = new Timeline();
-        cycleCount = (int)(time / RESOLUTION);
+        if(time != javafx.animation.Animation.INDEFINITE) {
+            cycleCount = (int) (time / RESOLUTION);
+        }
+        else{
+            cycleCount = time;
+        }
 
     }
 
@@ -48,5 +53,10 @@ public abstract class Animation extends Group {
             }
         });
         timeline.play();
+    }
+
+    public void stop(){
+        timeline.stop();
+        g.getChildren().remove(this);
     }
 }

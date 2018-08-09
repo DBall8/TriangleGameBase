@@ -1,6 +1,8 @@
 package Global;
 
 import GameManager.UserInputHandler.UserInputHandler;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 
 /**
@@ -16,7 +18,7 @@ public class Settings {
     private static int HEIGHT = 800;
 
     // If true, shows debug output
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG = true;
 
     private static boolean isClient = true;
 
@@ -52,5 +54,13 @@ public class Settings {
     public static UserInputHandler getUserInputHandler(){
         return getInstance().userInput;
     }
+
+    public static Group getDebugVisuals(){ return getInstance().g; }
+    public static void addDebugVisual(Node n){ getInstance().g.getChildren().add(n); }
+    public static void removeDebugVisual(Node n){ getInstance().g.getChildren().remove(n); }
+
+
+    // Debug visuals
+    static Group g = new Group();
 
 }

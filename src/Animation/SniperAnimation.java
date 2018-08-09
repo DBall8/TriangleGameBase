@@ -14,12 +14,10 @@ public class SniperAnimation extends Animation {
     private final static int ENDWIDTH = 1;
     private final static int LENGTH = 10000;
 
-    private final static int DURATION = 2 * 1000; // ms
-
     private Rectangle shotLine;
 
     public SniperAnimation(Player p) {
-        super(DURATION);
+        super(javafx.animation.Animation.INDEFINITE);
 
         shotLine = new Rectangle(STARTWIDTH, LENGTH);
         shotLine.setFill(p.getColor());
@@ -27,13 +25,15 @@ public class SniperAnimation extends Animation {
         shotLine.setTranslateY((Player.HEIGHT/2) - (LENGTH));
         getChildren().add(shotLine);
 
-        float changeAmount = ((float)STARTWIDTH - (float)ENDWIDTH) / (float)cycleCount;
+        float changePercent = 0.9f;
 
         super.setFrameEvent(new EventHandler() {
             @Override
             public void handle(Event event) {
-                shotLine.setWidth(shotLine.getWidth() - changeAmount);
-                shotLine.setTranslateX((Player.WIDTH/2) - (shotLine.getWidth()/2));
+                if(shotLine.getWidth() > ENDWIDTH){
+                    shotLine.setWidth(shotLine.getWidth() * changePercent);
+                    shotLine.setTranslateX((Player.WIDTH/2) - (shotLine.getWidth()/2));
+                }
             }
         });
     }

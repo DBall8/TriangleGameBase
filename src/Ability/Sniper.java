@@ -11,6 +11,8 @@ public class Sniper extends Ability {
 
     Player p;
     private EventHandler<FireEvent> feHandler;
+    private boolean isHeld = false;
+    SniperAnimation animation;
 
     public Sniper(Player p, EventHandler<FireEvent> feHandler) {
         super(p, UserInputHandler.Binding.ABILITY1);
@@ -22,12 +24,19 @@ public class Sniper extends Ability {
 
     @Override
     public boolean use() {
-        if(!onCooldown && isPressed()){
+        if(!onCooldown){
+            if(isPressed() && !isHeld){
+                isHeld = true;
+                animation = new SniperAnimation(p);
+                p.addAnimation(animation, true);
+            } else if(!isPressed() && isHeld){
+                feHandler.handle(new FireEvent(new Projectile(p), "hitscan"));
+                goOnCooldown();
+                isHeld = false;
+                animation.stop();
+                return true;
+            }
 
-            feHandler.handle(new FireEvent(new Projectile(p), "hitscan"));
-            goOnCooldown();
-            p.addAnimation(new SniperAnimation(p), true);
-            return true;
         }
         return false;
     }

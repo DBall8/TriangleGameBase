@@ -12,7 +12,9 @@ import Objects.Entities.Projectile;
 import Events.FireEvent;
 import Objects.ICollidable;
 import Objects.Obstacle;
+import Objects.GameMap;
 import Physics.Physics;
+import Physics.Line;
 import Visuals.Background;
 import Visuals.HUD;
 import javafx.application.Platform;
@@ -42,6 +44,7 @@ public class GameManager extends Pane {
     private List<ICollidable> obstacles = new ArrayList<>(); // a list of all obstacles
     private GameTime time; // The class responsible for running the game frame updating at the correct period
 
+    private GameMap map;
     private Player p1; // the player being controlled
 
     private EventHandler<FrameEvent> frameHandler; // the object to pass completed frames to
@@ -86,23 +89,20 @@ public class GameManager extends Pane {
             p1.initializeAsPlayer1(scene, new EventHandler<FireEvent>() {
                 @Override
                 public void handle(FireEvent fe) {
-                    // Add bullet here
-//                    if(fe.type.equals("hitscan")){
-//                        Rectangle r = new Rectangle(4, Physics.getClosestLOSPoint(p1.getX(), p1.getY(), p1.getAngle(), obstacles));
-//                        r.setTranslateX(Player.WIDTH/2 - r.getWidth()/2);
-//                        r.setTranslateY(Player.HEIGHT/2 - r.getHeight());
-//                        r.setFill(Color.RED);
-//                        p1.getBodyGroup().getChildren().add(r);
-//                    }
-                    enterProjectile(fe.projectile);
-                    p1.addNewShot(fe.projectile);
+                    handleNewFireEvent(fe);
                 }
             });
             addPlayer(p1);
         }
-        // add map obstacles
-        addObstacle(375, 200, 50, 400);
-        addObstacle(200, 375, 400, 50);
+        // set up map
+        map = new GameMap("Cross");
+        for(Obstacle o: map.getObstacles()){
+            addObstacle(o);
+        }
+
+        if(Settings.isDebug()){
+            getChildren().add(Settings.getDebugVisuals());
+        }
 
         // start playing the game
         time.play();
@@ -417,16 +417,25 @@ public class GameManager extends Pane {
         foreground.getChildren().remove(p.getVisuals());
     }
 
+    private void handleNewFireEvent(FireEvent fireEvent){
+        // Add bullet here
+        if(fireEvent.type.equals("hitscan")){
+            Line los = Physics.getLOS(p1.getX(), p1.getY(), p1.getAngle(), map);
+            Rectangle r = new Rectangle(4, los.getLength());
+            r.setTranslateX(Player.WIDTH/2 - r.getWidth()/2);
+            r.setTranslateY(Player.HEIGHT/2 - r.getHeight());
+            r.setFill(Color.RED);
+            p1.getBodyGroup().getChildren().add(r);
+        }
+        enterProjectile(fireEvent.projectile);
+        p1.addNewShot(fireEvent.projectile);
+    }
+
     /**
      * Adss a new collidable obstacle to the game
-     * @param xpos the obstacle's left edge coordinate
-     * @param ypos the obstacle's top edge coordinate
-     * @param width the obstacle's width
-     * @param height the obstacle's height
+     * @param o the obstacle to add to the game
      */
-    private void addObstacle(int xpos, int ypos, int width, int height){
-        // create the obstacle
-        Obstacle o = new Obstacle(xpos, ypos, width, height);
+    private void addObstacle(Obstacle o){
         // add the visuals
         foreground.getChildren().add(o);
         // add to the list

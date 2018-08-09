@@ -2,7 +2,10 @@ package Physics;
 
 import Global.Settings;
 import Objects.Entities.Entity;
+import Objects.GameMap;
 import Objects.ICollidable;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import java.util.List;
 
@@ -307,7 +310,25 @@ public class Physics {
 
     }
 
-    public static float getClosestLOSPoint(float startx, float starty, float angle, List<ICollidable> collidables){
+    public static boolean checkLOS(Line los, ICollidable collidable){
+        Line[] lines = new Line[]{
+                new Line(collidable.leftX(), collidable.topY(), collidable.rightX(), collidable.topY()), // top line
+                new Line(collidable.leftX(), collidable.bottomY(), collidable.rightX(), collidable.bottomY()), // bottom line
+                new Line(collidable.leftX(), collidable.topY(), collidable.leftX(), collidable.bottomY()), // left line
+                new Line(collidable.rightX(), collidable.topY(), collidable.rightX(), collidable.bottomY()) // right line
+        };
+
+        for(Line line: lines){
+            if(los.intersects(line)){
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public static Line getLOS(float startx, float starty, float angle, GameMap map){
         float a = Settings.getWindowWidth();
         float b = Settings.getWindowHeight();
         float screenDiagonal =  (float)Math.sqrt((a*a) + (b*b));
@@ -316,13 +337,13 @@ public class Physics {
 
         float closestLosDist = screenDiagonal;
         float temp;
-        for(ICollidable collidable: collidables){
+        for(ICollidable collidable: map.getObstacles()){
             if((temp = getLOSDist(startx, starty, los, collidable)) < closestLosDist){
                 closestLosDist = temp;
             }
         }
 
-        return closestLosDist;
+        return new Line(startx, starty, angle, closestLosDist, true);
     }
 
     public static float getLOSDist(float startx, float starty, Line los, ICollidable collidable){
@@ -358,18 +379,22 @@ public class Physics {
         else{
             if(los.intersects(topLine)){
                 dist = Physics.getDistance(startx, starty, los.getXAt(topLine.p1.y), topLine.p1.y);
+                debugAddDot(los.getXAt(topLine.p1.y), topLine.p1.y);
                 if(dist < closestIntersection) closestIntersection = dist;
             }
             if(los.intersects(bottomLine)){
                 dist = Physics.getDistance(startx, starty, los.getXAt(bottomLine.p1.y), topLine.p1.y);
+                debugAddDot(los.getXAt(bottomLine.p1.y), bottomLine.p1.y);
                 if(dist < closestIntersection) closestIntersection = dist;
             }
             if(los.intersects(rightLine)){
                 dist = Physics.getDistance(startx, starty, rightLine.p1.x, los.getYAt(rightLine.p1.x));
+                debugAddDot(rightLine.p1.x, los.getYAt(rightLine.p1.x));
                 if(dist < closestIntersection) closestIntersection = dist;
             }
             if(los.intersects(leftLine)){
                 dist = Physics.getDistance(startx, starty, leftLine.p1.x, los.getYAt(leftLine.p1.x));
+                debugAddDot(leftLine.p1.x, los.getYAt(leftLine.p1.x));
                 if(dist < closestIntersection) closestIntersection = dist;
             }
         }
@@ -378,5 +403,16 @@ public class Physics {
 
         return closestIntersection;
     }
+
+    private static void debugAddDot(float x, float y){
+        if(Settings.isDebug()){
+            Circle c = new Circle(4);
+            c.setFill(Color.RED);
+            c.setTranslateX(x - 2);
+            c.setTranslateY(y - 2);
+            Settings.addDebugVisual(c);
+        }
+    }
+
 
 }

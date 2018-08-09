@@ -5,6 +5,7 @@ public class Line {
     Point p1, p2;
     float slope;
     float intercept;
+    float length = -1;
 
     public Line(float x1, float y1, float x2, float y2){
         p1 = new Point(x1, y1);
@@ -22,7 +23,7 @@ public class Line {
     public float getXAt(float y) {
         if(isHorizontal()) return 0;
         getSlopeAndIntercept();
-        return (intercept - y) / slope;
+        return (intercept - y) / -slope;
     }
 
     public float getYAt(float x) {
@@ -114,4 +115,15 @@ public class Line {
             this.y = y;
         }
     }
+
+    public float getLength() {
+        if (length >= 0) {
+            return length;
+        }
+        else{
+            return Physics.getDistance(p1.x, p1.y, p2.x, p2.y);
+        }
+
+    }
+
 }
