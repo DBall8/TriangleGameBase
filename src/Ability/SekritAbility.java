@@ -3,8 +3,8 @@ package Ability;
 import Events.EventHandler;
 import Events.FireEvent;
 import GameManager.UserInputHandler.UserInputHandler;
+import Objects.Entities.Projectiles.BasicShot;
 import Objects.Entities.Player;
-import Objects.Entities.Projectile;
 
 public class SekritAbility extends Ability {
 
@@ -21,7 +21,7 @@ public class SekritAbility extends Ability {
     @Override
     public boolean use(){
         if(!onCooldown && isPressed()){
-            feHandler.handle(new FireEvent(new Projectile(p), "sekrit"));
+            feHandler.handle(new FireEvent(new BasicShot(p), "sekrit"));
             goOnCooldown();
             return true;
         }

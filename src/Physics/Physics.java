@@ -310,7 +310,14 @@ public class Physics {
 
     }
 
+    /**
+     * Checks if a player is within the line of sight given
+     * @param los the line of sight
+     * @param collidable the player
+     * @return true if the object is within the line of sight
+     */
     public static boolean checkLOS(Line los, ICollidable collidable){
+        // Get the line along each edge of the object's hit box
         Line[] lines = new Line[]{
                 new Line(collidable.leftX(), collidable.topY(), collidable.rightX(), collidable.topY()), // top line
                 new Line(collidable.leftX(), collidable.bottomY(), collidable.rightX(), collidable.bottomY()), // bottom line
@@ -318,6 +325,7 @@ public class Physics {
                 new Line(collidable.rightX(), collidable.topY(), collidable.rightX(), collidable.bottomY()) // right line
         };
 
+        // If the line of site crosses any of the lines, return true
         for(Line line: lines){
             if(los.intersects(line)){
                 return true;
@@ -328,33 +336,57 @@ public class Physics {
 
     }
 
-    public static Line getLOS(float startx, float starty, float angle, GameMap map){
+    /**
+     * Create a line representing the line from the given point outwards at the given angle that goes as far as the
+     * nearest obstacle
+     * @param startx the starting point x coordinate
+     * @param starty the starting point y coordinate
+     * @param angle the angle of the line
+     * @return the representitive line
+     */
+    public static Line getLOS(float startx, float starty, float angle){
+
+        // Get the diagonal length of the screen, which is the max length line possible
         float a = Settings.getWindowWidth();
         float b = Settings.getWindowHeight();
         float screenDiagonal =  (float)Math.sqrt((a*a) + (b*b));
 
+        // Create a line of the maximum length from the start point at the given angle
         Line los = new Line(startx, starty, angle, screenDiagonal, true);
 
+        // Loop through each obstacle, finding the distance from the start point if the line crosses the obstacle
+        // If the distance is shorter than the distance to any previous obstacle, store it as the new closest
         float closestLosDist = screenDiagonal;
         float temp;
-        for(ICollidable collidable: map.getObstacles()){
+        for(ICollidable collidable: GameMap.getObstacles()){
             if((temp = getLOSDist(startx, starty, los, collidable)) < closestLosDist){
                 closestLosDist = temp;
             }
         }
 
+        // Return the same line except with the shortest distance to an obstacle it crosses for its length
         return new Line(startx, starty, angle, closestLosDist, true);
     }
 
+    /**
+     * If the line given crosses the obstacle given, return the distance from the line's start point
+     * @param startx the start point x coordinate
+     * @param starty the start point y coordinate
+     * @param los the line being checked for crossing the obstacle
+     * @param collidable the obstacle being checked for the line crossing
+     * @return the distance from the start point to where the line crosses the obstacle, or FLoat.MAX if it does not cross
+     */
     public static float getLOSDist(float startx, float starty, Line los, ICollidable collidable){
 
         float closestIntersection = Float.MAX_VALUE;
 
+        // Get the line from each side of the object's collision box
         Line topLine = new Line(collidable.leftX(), collidable.topY(), collidable.rightX(), collidable.topY()); // top line
         Line bottomLine = new Line(collidable.leftX(), collidable.bottomY(), collidable.rightX(), collidable.bottomY()); // bottom line
         Line leftLine = new Line(collidable.leftX(), collidable.topY(), collidable.leftX(), collidable.bottomY()); // left line
         Line rightLine = new Line(collidable.rightX(), collidable.topY(), collidable.rightX(), collidable.bottomY()); // right line
 
+        // If the line is horizonatl, only check the obstacle's vertical lines
         float dist;
         if(los.isHorizontal()){
             if(los.intersects(rightLine)){
@@ -366,6 +398,7 @@ public class Physics {
                 if(dist < closestIntersection) closestIntersection = dist;
             }
         }
+        // If the line is vertical, only check the obstacle's horizonatl lines
         else if(los.isVertical()){
             if(los.intersects(topLine)){
                 dist = Math.abs(starty - topLine.p1.y);
@@ -376,6 +409,8 @@ public class Physics {
                 if(dist < closestIntersection) closestIntersection = dist;
             }
         }
+
+        // If neither horizontal or vertical, check all 4 lines
         else{
             if(los.intersects(topLine)){
                 dist = Physics.getDistance(startx, starty, los.getXAt(topLine.p1.y), topLine.p1.y);
@@ -383,7 +418,7 @@ public class Physics {
                 if(dist < closestIntersection) closestIntersection = dist;
             }
             if(los.intersects(bottomLine)){
-                dist = Physics.getDistance(startx, starty, los.getXAt(bottomLine.p1.y), topLine.p1.y);
+                dist = Physics.getDistance(startx, starty, los.getXAt(bottomLine.p1.y), bottomLine.p1.y);
                 debugAddDot(los.getXAt(bottomLine.p1.y), bottomLine.p1.y);
                 if(dist < closestIntersection) closestIntersection = dist;
             }
@@ -399,11 +434,14 @@ public class Physics {
             }
         }
 
-
-
         return closestIntersection;
     }
 
+    /**
+     * Adds a simple visual dot to the screen at a given coord for debugging
+     * @param x
+     * @param y
+     */
     private static void debugAddDot(float x, float y){
         if(Settings.isDebug()){
             Circle c = new Circle(4);

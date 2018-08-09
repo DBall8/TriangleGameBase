@@ -1,6 +1,6 @@
 package Events;
 
-import Objects.Entities.Projectile;
+import Objects.Entities.Projectiles.Projectile;
 
 /**
  * Simple event for handling the firing of a projectile

@@ -1,7 +1,8 @@
 package Events.FrameEvent;
 
 import Events.HitEvent;
-import Objects.Entities.Projectile;
+import Objects.Entities.Projectiles.BasicShot;
+import Objects.Entities.Projectiles.Projectile;
 import org.json.JSONObject;
 
 public abstract class FrameEvent {
@@ -28,7 +29,7 @@ public abstract class FrameEvent {
         yvel = json.getFloat("yvel");
         angle = json.getFloat("angle");
 
-        return new Projectile(ID, ownerID, x, y, xvel, yvel, angle);
+        return new BasicShot(ID, ownerID, x, y, xvel, yvel, angle);
 
     }
 

@@ -2,7 +2,7 @@ package Events.FrameEvent;
 
 import Events.HitEvent;
 import Objects.Entities.Player;
-import Objects.Entities.Projectile;
+import Objects.Entities.Projectiles.Projectile;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

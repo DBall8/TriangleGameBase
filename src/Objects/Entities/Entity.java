@@ -1,11 +1,11 @@
 package Objects.Entities;
 
 import Physics.Physics;
+import Physics.Bounds;
 import Global.Settings;
 import Objects.ICollidable;
 import Physics.Collision;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -24,7 +24,8 @@ public abstract class Entity {
     protected float width, height; // dimenions
 
     protected Group visuals;
-    protected Rectangle boundingBox; // a box for detecting collisions
+    protected Bounds boundingBox; // a box for detecting collisions
+    protected Rectangle boundingBoxVisuals;
 
     // Objects for tracking collisions
     protected Collision tempCollision = new Collision();
@@ -40,22 +41,23 @@ public abstract class Entity {
 
         float average = (width + height)/2;
 
-        boundingBox = new Rectangle(average, average);
+        boundingBox = new Bounds(x, y, width, height);
+        boundingBoxVisuals = new Rectangle(average, average);
 
         reset();
 
         if(Settings.isDebug()) {
-            boundingBox.setFill(Color.TRANSPARENT);
-            boundingBox.setStroke(Color.BLUE);
-            visuals.getChildren().add(boundingBox);
+            boundingBoxVisuals.setFill(Color.TRANSPARENT);
+            boundingBoxVisuals.setStroke(Color.BLUE);
+            visuals.getChildren().add(boundingBoxVisuals);
         }
     }
 
     // For drawing the entity in the game
     public void draw(){
         if(Settings.isDebug()){
-            boundingBox.setTranslateX(xpos - getXRadius());
-            boundingBox.setTranslateY(ypos - getYRadius());
+            boundingBoxVisuals.setTranslateX(xpos - getXRadius());
+            boundingBoxVisuals.setTranslateY(ypos - getYRadius());
         }
     }
 
@@ -91,6 +93,7 @@ public abstract class Entity {
         else{
             xpos += xvel*time*(60.0/ Settings.getFramerate());
             ypos += yvel*time*(60.0/ Settings.getFramerate());
+            boundingBox.updatePosition(xpos, ypos);
         }
     }
 
@@ -166,5 +169,5 @@ public abstract class Entity {
     //public float getVelocity(){ return (float)Math.sqrt((xvel*xvel) + (yvel * yvel));}
     public float getXRadius(){ return (float)boundingBox.getWidth()/2; }
     public float getYRadius(){ return (float)boundingBox.getHeight()/2; }
-    public Rectangle getBoundingBox(){ return boundingBox; }
+    public Bounds getBoundingBox(){ return boundingBox; }
 }

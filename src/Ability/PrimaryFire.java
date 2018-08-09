@@ -3,8 +3,8 @@ package Ability;
 
 import Events.EventHandler;
 import GameManager.UserInputHandler.UserInputHandler;
+import Objects.Entities.Projectiles.BasicShot;
 import Objects.Entities.Player;
-import Objects.Entities.Projectile;
 import Events.FireEvent;
 
 import java.util.Timer;
@@ -55,7 +55,7 @@ public class PrimaryFire extends Ability {
             }, (int)FIRERATE);
 
             // fire the shot
-            feHandler.handle(new FireEvent(new Projectile(p), "shot"));
+            feHandler.handle(new FireEvent(new BasicShot(p), "shot"));
             return true;
         }
 

@@ -6,6 +6,7 @@ import Events.EventHandler;
 import Events.FireEvent;
 import GameManager.UserInputHandler.UserInputHandler;
 import Global.Settings;
+import Objects.Entities.Projectiles.Projectile;
 import Physics.Physics;
 import GameManager.UserInputHandler.UserInputHandler.Binding;
 import Objects.ICollidable;
@@ -35,7 +36,7 @@ public class Player extends Entity implements ICollidable {
     private final static float ACCEL = 0.8f;
     private final static float RACCEL = 4;
     private final static float BOOSTRACCEL = 6;
-    private final static float AIMRACCEL = 2;
+    private final static float AIMRACCEL = 1;
 
 
     public final static int MAXHEALTH = 10;

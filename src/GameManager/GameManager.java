@@ -8,13 +8,11 @@ import Global.Settings;
 import Objects.Entities.Entity;
 import Events.HitEvent;
 import Objects.Entities.Player;
-import Objects.Entities.Projectile;
+import Objects.Entities.Projectiles.Projectile;
 import Events.FireEvent;
 import Objects.ICollidable;
 import Objects.Obstacle;
 import Objects.GameMap;
-import Physics.Physics;
-import Physics.Line;
 import Visuals.Background;
 import Visuals.HUD;
 import javafx.application.Platform;
@@ -24,7 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 import java.util.*;
 
@@ -44,7 +41,6 @@ public class GameManager extends Pane {
     private List<ICollidable> obstacles = new ArrayList<>(); // a list of all obstacles
     private GameTime time; // The class responsible for running the game frame updating at the correct period
 
-    private GameMap map;
     private Player p1; // the player being controlled
 
     private EventHandler<FrameEvent> frameHandler; // the object to pass completed frames to
@@ -95,8 +91,8 @@ public class GameManager extends Pane {
             addPlayer(p1);
         }
         // set up map
-        map = new GameMap("Cross");
-        for(Obstacle o: map.getObstacles()){
+        GameMap.buildMap("Cross");
+        for(Obstacle o: GameMap.getObstacles()){
             addObstacle(o);
         }
 
@@ -226,6 +222,12 @@ public class GameManager extends Pane {
         }
     }
 
+    private void checkHits(){
+        for(Map.Entry<String, Projectile> entry: projectiles.entrySet()){
+            entry.getValue().checkHits(players);
+        }
+    }
+
     /**
      * Calculates the next frame of the game simulation
      */
@@ -243,6 +245,8 @@ public class GameManager extends Pane {
 
             // move each entity to the time of the first detected collision (if any)
             move(firstCollisionTime);
+
+            checkHits();
 
             // mark down the remaining time in the time step
             timeLeft -= firstCollisionTime;
@@ -289,7 +293,7 @@ public class GameManager extends Pane {
         // Make sure the player doesnt already exist
         if(!players.containsKey(p.getID())) {
             players.put(p.getID(), p); // add to map
-            obstacles.add(p); // add to collidable objects
+            //obstacles.add(p); // add to collidable objects
             foreground.getChildren().add(p.getVisuals()); // add to visuals
 
             p.attachHUD(hud.addNewPlayerUI());
@@ -419,14 +423,6 @@ public class GameManager extends Pane {
 
     private void handleNewFireEvent(FireEvent fireEvent){
         // Add bullet here
-        if(fireEvent.type.equals("hitscan")){
-            Line los = Physics.getLOS(p1.getX(), p1.getY(), p1.getAngle(), map);
-            Rectangle r = new Rectangle(4, los.getLength());
-            r.setTranslateX(Player.WIDTH/2 - r.getWidth()/2);
-            r.setTranslateY(Player.HEIGHT/2 - r.getHeight());
-            r.setFill(Color.RED);
-            p1.getBodyGroup().getChildren().add(r);
-        }
         enterProjectile(fireEvent.projectile);
         p1.addNewShot(fireEvent.projectile);
     }

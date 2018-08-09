@@ -108,14 +108,6 @@ public class Line {
         COUNTERCLOCKWISE
     }
 
-    class Point{
-        float x, y;
-        Point(float x, float y){
-            this.x = x;
-            this.y = y;
-        }
-    }
-
     public float getLength() {
         if (length >= 0) {
             return length;
