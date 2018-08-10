@@ -1,5 +1,4 @@
-package Ability;
-
+package ability;
 
 import events.EventHandler;
 import gameManager.userInputHandler.UserInputHandler;

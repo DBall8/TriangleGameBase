@@ -1,6 +1,6 @@
 package objects.entities;
 
-import Ability.*;
+import ability.*;
 import animation.Animation;
 import events.EventHandler;
 import events.FireEvent;

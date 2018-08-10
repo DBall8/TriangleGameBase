@@ -1,4 +1,4 @@
-package Ability;
+package ability;
 
 import gameManager.userInputHandler.UserInputHandler;
 import objects.entities.Player;

@@ -1,4 +1,4 @@
-package Ability;
+package ability;
 
 import animation.SniperAnimation;
 import events.EventHandler;
