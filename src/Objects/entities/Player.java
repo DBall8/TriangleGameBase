@@ -2,6 +2,7 @@ package objects.entities;
 
 import ability.*;
 import animation.Animation;
+import animation.SniperAnimation;
 import events.EventHandler;
 import events.FireEvent;
 import gameManager.userInputHandler.UserInputHandler;
@@ -54,6 +55,8 @@ public class Player extends Entity implements ICollidable {
     private Ability ability1;
     private Ability ability2;
     private Ability sekrit;
+
+    private SniperAnimation sniperAnimation;
 
     private boolean moveDisabled = false;
 
@@ -288,6 +291,7 @@ public class Player extends Entity implements ICollidable {
     public void addAnimation(Animation a, boolean attachedToPlayer){
 
         if(a.getType() == Animation.Type.SniperAnimation){
+            sniperAnimation = (SniperAnimation)a;
             newAnimations.add(a);
         }
 
@@ -304,6 +308,16 @@ public class Player extends Entity implements ICollidable {
         });
     }
 
+    public void stopSniperAnimation(){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                sniperAnimation.stop();
+            }
+        });
+
+    }
+
     public void addNewShot(Projectile p){
         this.newShots.add(p);
     }
@@ -312,7 +326,7 @@ public class Player extends Entity implements ICollidable {
     public List<Animation> getNewAnimations(){ return newAnimations; }
 
     public void clearNewShots(){ newShots.clear(); }
-    public void clearNewAnimations(){ newShots.clear(); }
+    public void clearNewAnimations(){ newAnimations.clear(); }
 
     public void disableMovement(){ moveDisabled = true; }
     public void enableMovement(){ moveDisabled = false; }

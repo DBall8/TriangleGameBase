@@ -1,5 +1,6 @@
 package events.frameEvent;
 
+import animation.SniperAnimation;
 import events.HitEvent;
 import objects.entities.projectiles.BasicShot;
 import objects.entities.projectiles.HitScan;
@@ -77,14 +78,27 @@ public abstract class FrameEvent {
 
     }
 
-    protected JSONObject convertAnimationToJSON(Animation a){
+    public JSONObject convertAnimationToJSON(Animation a){
         JSONObject json = new JSONObject();
-
+        json.put("type", a.getType());
+        switch(a.getType()){
+            case SniperAnimation:
+                json.put("ownerID", a.getOwnerID());
+                break;
+            default:
+        }
         return json;
     }
 
     protected Animation convertJSONtoAnimation(JSONObject json){
-        return new HitAnimation(100, 100);
+        Animation.Type type = json.getEnum(Animation.Type.class, "type");
+
+        switch (type){
+            case SniperAnimation:
+                return new SniperAnimation(json.getString("ownerID"));
+            default:
+                return new HitAnimation(100, 100);
+        }
     }
 
 }

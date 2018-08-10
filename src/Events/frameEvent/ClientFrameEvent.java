@@ -173,4 +173,6 @@ public class ClientFrameEvent extends FrameEvent {
     public Projectile[] getNewProjectiles() { return newProjectiles; }
 
     public HitEvent[] getNewHits(){ return newHits; }
+
+    public Animation[] getNewAnimations(){ return newAnimations; }
 }

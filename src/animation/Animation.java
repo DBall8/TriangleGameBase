@@ -19,6 +19,7 @@ public abstract class Animation extends Group {
     protected EventHandler<ActionEvent> eventHandler;
 
     protected Type type;
+    protected String ownerID;
 
     public enum Type{
         HitAnimation,
@@ -68,4 +69,12 @@ public abstract class Animation extends Group {
     }
 
     public Type getType(){ return type; }
+
+    public String getOwnerID(){
+        if(ownerID != null){
+            return ownerID;
+        }
+
+        return "";
+    }
 }

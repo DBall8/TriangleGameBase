@@ -263,7 +263,7 @@ public class GameManager extends Pane {
 
         // Do a client frame event if this is a client game
         FrameEvent frameEvent;
-        if(p1 != null) {
+        if(Settings.isClient()) {
             frameEvent = new ClientFrameEvent(p1);
             if(newHits.size() > 0){
                 ((ClientFrameEvent) frameEvent).addHits(newHits);
@@ -389,6 +389,13 @@ public class GameManager extends Pane {
             Player owner = players.get(p.getOwnerID());
             if(owner != null){
                 owner.addNewShot(p);
+            }
+        }
+
+        if(p.getType() == Projectile.Type.HitScan){
+            Player owner = players.get(p.getOwnerID());
+            if(owner != null){
+                owner.stopSniperAnimation();
             }
         }
     }
