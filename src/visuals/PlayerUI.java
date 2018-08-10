@@ -23,7 +23,7 @@ public class PlayerUI extends Group{
     private Color color;
     private short pnum;
 
-    public PlayerUI(short pnum){
+    public PlayerUI(short pnum, Player p){
         super();
 
         this.pnum = pnum;
@@ -61,7 +61,13 @@ public class PlayerUI extends Group{
         boostMeter.setFill(Color.CYAN);
         boostMeter.setTranslateY(2*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT);
 
-        getChildren().addAll(playerLabel, healthBarBG, healthBar);
+        AbilityCooldownUI ability1UI = new AbilityCooldownUI(p.getAbility1());
+        ability1UI.setTranslateY(3*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + BOOSTBARHEIGHT);
+        AbilityCooldownUI ability2UI = new AbilityCooldownUI(p.getAbility2());
+        ability2UI.setTranslateY(3*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + BOOSTBARHEIGHT);
+        ability2UI.setTranslateX(SPACING + AbilityCooldownUI.WIDTH);
+
+        getChildren().addAll(playerLabel, healthBarBG, healthBar, ability1UI, ability2UI);
     }
 
     public void notifyChanged(int health) {

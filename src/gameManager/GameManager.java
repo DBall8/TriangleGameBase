@@ -296,7 +296,7 @@ public class GameManager extends Pane {
             //obstacles.add(p); // add to collidable objects
             foreground.getChildren().add(p.getVisuals()); // add to visuals
 
-            p.attachHUD(hud.addNewPlayerUI());
+            p.attachHUD(hud.addNewPlayerUI(p));
         }
     }
 

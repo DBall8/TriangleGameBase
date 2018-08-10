@@ -17,7 +17,7 @@ public class Sniper extends Ability {
     public Sniper(Player p, EventHandler<FireEvent> feHandler) {
         super(p, UserInputHandler.Binding.ABILITY1);
 
-        cooldown = 0.1f;
+        cooldown = 5.0f;
         this.feHandler = feHandler;
         this.p = p;
     }

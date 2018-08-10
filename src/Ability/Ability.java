@@ -2,6 +2,7 @@ package ability;
 
 import gameManager.userInputHandler.UserInputHandler;
 import objects.entities.Player;
+import visuals.AbilityCooldownUI;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,6 +20,8 @@ public abstract class Ability {
     protected float cooldown = 5.0f; // Cooldown in seconds
     protected boolean onCooldown = false; // true when on Cooldown, false when available
     protected Timer timer = new Timer(); // the timer responsible for tracking the cooldown
+
+    protected AbilityCooldownUI ui;
 
     // Constructor
     public Ability(Player p, UserInputHandler.Binding binding){
@@ -43,6 +46,10 @@ public abstract class Ability {
                 onCooldown = false;
             }
         }, (int)(cooldown * 1000));
+
+        if(ui != null){
+            ui.goOnCooldown((int)cooldown);
+        }
     }
 
     public boolean use() {
@@ -51,6 +58,10 @@ public abstract class Ability {
             return true;
         }
         return false;
+    }
+
+    public void attachUI(AbilityCooldownUI ui){
+        this.ui = ui;
     }
 
 }

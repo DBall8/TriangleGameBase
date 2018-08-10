@@ -363,6 +363,9 @@ public class Player extends Entity implements ICollidable {
 
     public float getVelocity(){ return velocity; }
 
+    public Ability getAbility1(){ return ability1; }
+    public Ability getAbility2(){ return  ability2; }
+
 //    @Override
 //    public float getXRadius(){
 //        float radiians = Physics.toRadiians(angle);

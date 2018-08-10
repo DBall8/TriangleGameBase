@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import objects.entities.Player;
 
 public class HUD extends Group {
 
@@ -28,14 +29,14 @@ public class HUD extends Group {
         getChildren().add(winnerText);
     }
 
-    public PlayerUI addNewPlayerUI(){
+    public PlayerUI addNewPlayerUI(Player p){
 
         short index = availableIndex();
         if(index < 0 || index >= MAXPLAYERS){
             return null;
         }
 
-        PlayerUI newUI = new PlayerUI(index);
+        PlayerUI newUI = new PlayerUI(index, p);
         playerUIs[index] = newUI;
 
         switch (index){
