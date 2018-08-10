@@ -1,11 +1,11 @@
 package Ability;
 
 
-import Events.EventHandler;
-import GameManager.UserInputHandler.UserInputHandler;
-import Objects.Entities.Projectiles.BasicShot;
-import Objects.Entities.Player;
-import Events.FireEvent;
+import events.EventHandler;
+import gameManager.userInputHandler.UserInputHandler;
+import objects.entities.projectiles.BasicShot;
+import objects.entities.Player;
+import events.FireEvent;
 
 import java.util.Timer;
 import java.util.TimerTask;

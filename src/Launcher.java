@@ -1,7 +1,7 @@
-import Events.EventHandler;
-import Events.FrameEvent.FrameEvent;
-import GameManager.GameManager;
-import Global.Settings;
+import events.EventHandler;
+import events.frameEvent.FrameEvent;
+import gameManager.GameManager;
+import global.Settings;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

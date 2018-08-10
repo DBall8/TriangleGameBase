@@ -1,8 +1,8 @@
 package Ability;
 
-import GameManager.UserInputHandler.UserInputHandler;
-import Objects.Entities.Player;
-import Visuals.PlayerUI;
+import gameManager.userInputHandler.UserInputHandler;
+import objects.entities.Player;
+import visuals.PlayerUI;
 
 import java.util.TimerTask;
 

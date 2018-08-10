@@ -1,10 +1,10 @@
 package Ability;
 
-import Events.EventHandler;
-import Events.FireEvent;
-import GameManager.UserInputHandler.UserInputHandler;
-import Objects.Entities.Projectiles.BasicShot;
-import Objects.Entities.Player;
+import events.EventHandler;
+import events.FireEvent;
+import gameManager.userInputHandler.UserInputHandler;
+import objects.entities.projectiles.BasicShot;
+import objects.entities.Player;
 
 public class SekritAbility extends Ability {
 

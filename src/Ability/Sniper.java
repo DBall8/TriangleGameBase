@@ -1,11 +1,11 @@
 package Ability;
 
-import Animation.SniperAnimation;
-import Events.EventHandler;
-import Events.FireEvent;
-import GameManager.UserInputHandler.UserInputHandler;
-import Objects.Entities.Projectiles.HitScan;
-import Objects.Entities.Player;
+import animation.SniperAnimation;
+import events.EventHandler;
+import events.FireEvent;
+import gameManager.userInputHandler.UserInputHandler;
+import objects.entities.projectiles.HitScan;
+import objects.entities.Player;
 
 public class Sniper extends Ability {
 
