@@ -1,7 +1,9 @@
 package objects.entities.projectiles;
 
+import animation.HitAnimation;
 import events.HitEvent;
 import global.Settings;
+import javafx.application.Platform;
 import objects.entities.Entity;
 import objects.entities.Player;
 import objects.ICollidable;
@@ -85,6 +87,7 @@ public abstract class Projectile extends Entity {
                         hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, damage ));
                     }
                 }
+                p.addAnimation(new HitAnimation((int)xpos, (int)ypos), false);
                 alive = false;
             }
         }

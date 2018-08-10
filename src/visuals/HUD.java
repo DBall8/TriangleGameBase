@@ -36,7 +36,9 @@ public class HUD extends Group {
             return null;
         }
 
-        PlayerUI newUI = new PlayerUI(index, p);
+        PlayerUI newUI = new PlayerUI(index);
+        p.attachHUD(newUI);
+
         playerUIs[index] = newUI;
 
         switch (index){
@@ -60,6 +62,7 @@ public class HUD extends Group {
         }
 
         getChildren().add(newUI);
+
         return newUI;
     }
 

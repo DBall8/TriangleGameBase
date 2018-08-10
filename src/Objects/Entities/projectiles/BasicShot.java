@@ -55,6 +55,8 @@ public class BasicShot extends Projectile {
         this.xvel = xvel;
         this.yvel = yvel;
 
+        type = Type.BasicShot;
+
         body = new Rectangle(WIDTH, HEIGHT);
         body.setFill(Color.RED);
         visuals.getChildren().add(body);

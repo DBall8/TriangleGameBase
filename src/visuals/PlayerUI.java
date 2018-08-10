@@ -1,5 +1,6 @@
 package visuals;
 
+import javafx.application.Platform;
 import objects.entities.Player;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -23,7 +24,7 @@ public class PlayerUI extends Group{
     private Color color;
     private short pnum;
 
-    public PlayerUI(short pnum, Player p){
+    public PlayerUI(short pnum){
         super();
 
         this.pnum = pnum;
@@ -57,40 +58,48 @@ public class PlayerUI extends Group{
         healthBar.setTranslateY(SPACING + HEALTHBARBORDER);
         healthBar.setTranslateX(HEALTHBARBORDER);
 
-        boostMeter = new Rectangle(2*HEALTHBARBORDER + HEALTHBARWIDTH, BOOSTBARHEIGHT);
-        boostMeter.setFill(Color.CYAN);
-        boostMeter.setTranslateY(2*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT);
-
-        AbilityCooldownUI ability1UI = new AbilityCooldownUI(p.getAbility1());
-        ability1UI.setTranslateY(3*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + BOOSTBARHEIGHT);
-        AbilityCooldownUI ability2UI = new AbilityCooldownUI(p.getAbility2());
-        ability2UI.setTranslateY(3*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + BOOSTBARHEIGHT);
-        ability2UI.setTranslateX(SPACING + AbilityCooldownUI.WIDTH);
-
-        getChildren().addAll(playerLabel, healthBarBG, healthBar, ability1UI, ability2UI);
+        getChildren().addAll(playerLabel, healthBarBG, healthBar);
     }
 
-    public void notifyChanged(int health) {
-        double healthPercentage = (double)health / (double)Player.MAXHEALTH;
+    public void notifyHealthChanged(int health) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                double healthPercentage = (double)health / (double)Player.MAXHEALTH;
 
-        if(healthPercentage > 0.5){
-            healthBar.setFill(Color.GREEN);
-        }
-        else if(healthPercentage > 0.25){
-            healthBar.setFill(Color.YELLOW);
-        }
-        else{
-            healthBar.setFill(Color.RED);
-        }
-        healthBar.setWidth(HEALTHBARWIDTH * healthPercentage);
+                if(healthPercentage > 0.5){
+                    healthBar.setFill(Color.GREEN);
+                }
+                else if(healthPercentage > 0.25){
+                    healthBar.setFill(Color.YELLOW);
+                }
+                else{
+                    healthBar.setFill(Color.RED);
+                }
+                healthBar.setWidth(HEALTHBARWIDTH * healthPercentage);
+            }
+        });
+
     }
 
     public void notifyBoostChanged(double percent){
         boostMeter.setWidth(totalWidth() * percent);
     }
 
-    public void setControlled(){
-        getChildren().add(boostMeter);
+    public void setControlled(Player p){
+
+        boostMeter = new Rectangle(2*HEALTHBARBORDER + HEALTHBARWIDTH, BOOSTBARHEIGHT);
+        boostMeter.setFill(Color.CYAN);
+        boostMeter.setTranslateY(2*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT);
+
+        AbilityCooldownUI ability1UI = new AbilityCooldownUI(p.getAbility1());
+        ability1UI.setTranslateY(3*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + BOOSTBARHEIGHT);
+
+        AbilityCooldownUI ability2UI = new AbilityCooldownUI(p.getAbility2());
+        ability2UI.setTranslateY(3*SPACING + (2*HEALTHBARBORDER) + HEALTHBARHEIGHT + BOOSTBARHEIGHT);
+        ability2UI.setTranslateX(SPACING + AbilityCooldownUI.WIDTH);
+
+        getChildren().addAll(boostMeter, ability1UI, ability2UI);
     }
 
     int totalWidth(){

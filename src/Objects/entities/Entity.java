@@ -41,8 +41,8 @@ public abstract class Entity {
 
         float average = (width + height)/2;
 
-        boundingBox = new Bounds(x, y, width, height);
-        boundingBoxVisuals = new Rectangle(average, average);
+        boundingBox = new Bounds(x, y, average, average);
+        boundingBoxVisuals = new Rectangle(boundingBox.getWidth(), boundingBox.getHeight());
 
         reset();
 
@@ -56,8 +56,8 @@ public abstract class Entity {
     // For drawing the entity in the game
     public void draw(){
         if(Settings.isDebug()){
-            boundingBoxVisuals.setTranslateX(xpos - getXRadius());
-            boundingBoxVisuals.setTranslateY(ypos - getYRadius());
+            boundingBoxVisuals.setTranslateX(boundingBox.getX());
+            boundingBoxVisuals.setTranslateY(boundingBox.getY());
         }
     }
 

@@ -215,7 +215,7 @@ public class Player extends Entity implements ICollidable {
         this.hud = hud;
         if(boost != null){
             boost.attachUI(hud);
-            hud.setControlled();
+            hud.setControlled(this);
         }
         color = hud.getColor();
         aimer = new Aimer(color);
@@ -261,7 +261,7 @@ public class Player extends Entity implements ICollidable {
         if(this.health != health) {
             this.health = health;
             if (hud != null) {
-                hud.notifyChanged(health);
+                hud.notifyHealthChanged(health);
             }
             if(health < 0){
                 health = 0;
@@ -285,7 +285,7 @@ public class Player extends Entity implements ICollidable {
         //velocity = xvel = yvel = 0;
         //angle = spawnAngle;
         body.setFill(hud.getColor());
-        hud.notifyChanged(health);
+        hud.notifyHealthChanged(health);
     }
 
     public void addAnimation(Animation a, boolean attachedToPlayer){

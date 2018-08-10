@@ -1,5 +1,6 @@
 package objects.entities.projectiles;
 
+import animation.HitAnimation;
 import events.HitEvent;
 import global.Settings;
 import objects.entities.Player;
@@ -101,7 +102,7 @@ public class HitScan extends Projectile {
 
     @Override
     public void checkHits(HashMap<String, Player> players){
-        if(!p1Controlled || !active) return;
+        if(!active) return;
         for(Map.Entry<String, Player> entry: players.entrySet()){
             Player p = entry.getValue();
             if(p.getID().equals(ownerID)){
@@ -109,10 +110,13 @@ public class HitScan extends Projectile {
             }
 
             if(Physics.checkLOS(los, p)){
-                p.damage(damage);
-                if(hitEventHandler != null){
-                    hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, damage ));
+                if(p1Controlled) {
+                    p.damage(damage);
+                    if (hitEventHandler != null) {
+                        hitEventHandler.handle(new HitEvent(p.getID(), (int) xpos, (int) ypos, damage));
+                    }
                 }
+                p.addAnimation(new HitAnimation(Player.WIDTH/2, Player.HEIGHT/2), true);
                 active = false;
             }
         }
