@@ -7,6 +7,7 @@ import Objects.Entities.Projectiles.Projectile;
 import Objects.ICollidable;
 import Physics.Line;
 import Physics.Physics;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
@@ -28,7 +29,7 @@ public class HitScan extends Projectile {
     private int framesSpentAlive = 0;
 
     public HitScan(Player p) {
-        super("Hit-" + System.currentTimeMillis(), p.getID(), p.getX(), p.getY(), WIDTH, 1);
+        super("Hit-" + System.currentTimeMillis(), p.getID(), p.getX(), p.getY(), p.getAngle(), WIDTH, 1);
 
         p1Controlled = true;
         los = Physics.getLOS(p.getX(), p.getY(), p.getAngle());
@@ -46,6 +47,33 @@ public class HitScan extends Projectile {
         r.setAngle(p.getAngle() - 180);
         body.setTranslateX(p.getX() - WIDTH/2);
         body.setTranslateY(p.getY());
+        body.getTransforms().add(r);
+
+
+        visuals.getChildren().add(body);
+
+        type = Type.HitScan;
+    }
+
+    public HitScan(String ID, String ownerID, float x, float y, float angle) {
+        super(ID, ownerID, x, y, angle, WIDTH, 1);
+
+        p1Controlled = false;
+        los = Physics.getLOS(x, y, angle);
+
+        damage = DAMAGE;
+
+        height = los.getLength();
+
+        body = new Rectangle(WIDTH, los.getLength());
+        body.setFill(Color.RED);
+
+        Rotate r = new Rotate();
+        r.setPivotX(WIDTH/2);
+        r.setPivotY(0);
+        r.setAngle(angle - 180);
+        body.setTranslateX(x - WIDTH/2);
+        body.setTranslateY(y);
         body.getTransforms().add(r);
 
 

@@ -2,6 +2,7 @@ package Events.FrameEvent;
 
 import Events.HitEvent;
 import Objects.Entities.Projectiles.BasicShot;
+import Objects.Entities.Projectiles.HitScan;
 import Objects.Entities.Projectiles.Projectile;
 import org.json.JSONObject;
 
@@ -10,26 +11,46 @@ public abstract class FrameEvent {
 
     protected JSONObject convertProjectileToJSON(Projectile p){
         JSONObject json = new JSONObject();
+
         json.put("ID", p.getID());
+        json.put("type", p.getType());
         json.put("X", p.getX());
         json.put("Y", p.getY());
-        json.put("xvel", p.getXVel());
-        json.put("yvel", p.getYVel());
         json.put("angle", p.getAngle());
+
+        switch (p.getType()){
+            case HitScan:
+                break;
+            case BasicShot: default:
+                json.put("xvel", p.getXVel());
+                json.put("yvel", p.getYVel());
+                break;
+        }
         return json;
     }
 
     protected Projectile convertJSONtoProjectile(JSONObject json, String ownerID){
         String ID;
-        float x, y, xvel, yvel, angle;
+        float x, y, angle;
+        Projectile.Type type;
+
         ID = json.getString("ID");
+        type = json.getEnum(Projectile.Type.class, "type");
         x = json.getFloat("X");
         y = json.getFloat("Y");
-        xvel = json.getFloat("xvel");
-        yvel = json.getFloat("yvel");
         angle = json.getFloat("angle");
 
-        return new BasicShot(ID, ownerID, x, y, xvel, yvel, angle);
+        switch(type){
+            case HitScan:
+                return new HitScan(ID, ownerID, x, y, angle);
+            case BasicShot: default:
+                float xvel = json.getFloat("xvel");
+                float yvel = json.getFloat("yvel");
+                return new BasicShot(ID, ownerID, x, y, xvel, yvel, angle);
+        }
+
+
+
 
     }
 

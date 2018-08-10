@@ -22,7 +22,7 @@ public class BasicShot extends Projectile {
      * @param p the player who shot the projectile
      */
     public BasicShot(Player p){
-        super("Proj-" + System.currentTimeMillis(), p.getID(), (int)p.getX(), (int)p.getY(), WIDTH, HEIGHT);
+        super("Proj-" + System.currentTimeMillis(), p.getID(), p.getX(), p.getY(), p.getAngle(), WIDTH, HEIGHT);
 
         damage = DAMAGE;
         type = Type.BasicShot;
@@ -51,7 +51,7 @@ public class BasicShot extends Projectile {
      * @param ownerID the ID of the player who shot the projectile
      */
     public BasicShot(String ID, String ownerID, float x, float y, float xvel, float yvel, float angle){
-        super(ID, ownerID, (int)x, (int)y, WIDTH, HEIGHT);
+        super(ID, ownerID, x, y, angle, WIDTH, HEIGHT);
         this.angle = angle;
         this.xvel = xvel;
         this.yvel = yvel;

@@ -1,6 +1,7 @@
 package Global;
 
 import GameManager.UserInputHandler.UserInputHandler;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -56,7 +57,14 @@ public class Settings {
     }
 
     public static Group getDebugVisuals(){ return getInstance().g; }
-    public static void addDebugVisual(Node n){ getInstance().g.getChildren().add(n); }
+    public static void addDebugVisual(Node n){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                getInstance().g.getChildren().add(n);
+            }
+        });
+    }
     public static void removeDebugVisual(Node n){ getInstance().g.getChildren().remove(n); }
 
 

@@ -1,6 +1,5 @@
 package Objects.Entities.Projectiles;
 
-import Animation.HitAnimation;
 import Events.HitEvent;
 import Global.Settings;
 import Objects.Entities.Entity;
@@ -37,9 +36,10 @@ public abstract class Projectile extends Entity {
      * @param ID The ID of the projectile
      * @param ownerID the ID of the player who shot the projectile
      */
-    public Projectile(String ID, String ownerID, float x, float y, int width, int height){
+    public Projectile(String ID, String ownerID, float x, float y, float angle, int width, int height){
         super(ID, (int)x, (int)y, width, height);
 
+        this.angle = angle;
         this.ownerID = ownerID;
         alive = true;
     }
@@ -97,6 +97,8 @@ public abstract class Projectile extends Entity {
     }
 
     public String getOwnerID(){ return ownerID; }
+
+    public Type getType(){ return type; }
 
     // Setters
 
