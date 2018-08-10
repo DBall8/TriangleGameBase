@@ -3,6 +3,7 @@ package Events.FrameEvent;
 import Events.HitEvent;
 import Objects.Entities.Player;
 import Objects.Entities.Projectiles.Projectile;
+import Animation.Animation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,6 +18,7 @@ public class ClientFrameEvent extends FrameEvent {
     private float x, y, xvel, yvel, angle; // the client's player's status
     private int health;
     private Projectile[] newProjectiles;
+    private Animation[] newAnimations;
     private HitEvent[] newHits;
 
     /**
@@ -33,11 +35,13 @@ public class ClientFrameEvent extends FrameEvent {
         this.health = p.getHealth();
 
         if(p.getNewShots().size() > 0){
-            this.newProjectiles = new Projectile[p.getNewShots().size()];
-            for(int i = 0; i<this.newProjectiles.length; i++){
-                this.newProjectiles[i] = p.getNewShots().get(i);
-            }
+            addShots(p.getNewShots());
             p.clearNewShots();
+        }
+
+        if(p.getNewAnimations().size() > 0){
+            addAnimations(p.getNewAnimations());
+            p.clearNewAnimations();
         }
     }
 
@@ -69,12 +73,34 @@ public class ClientFrameEvent extends FrameEvent {
                 newHits[i] = convertJSONtoHit((JSONObject)newH.get(i));
             }
         }
+
+        if(json.has("newAnimations")){
+            JSONArray newA = json.getJSONArray("newAnimations");
+            newAnimations = new Animation[newA.length()];
+            for(int i=0; i<newA.length(); i++){
+                newAnimations[i] = convertJSONtoAnimation((JSONObject)newA.get(i));
+            }
+        }
+    }
+
+    public void addShots(List<Projectile> shots){
+        this.newProjectiles = new Projectile[shots.size()];
+        for(int i = 0; i<shots.size(); i++){
+            this.newProjectiles[i] = shots.get(i);
+        }
     }
 
     public void addHits(List<HitEvent> hits){
         this.newHits = new HitEvent[hits.size()];
         for(int i=0; i<hits.size(); i++){
             newHits[i] = hits.get(i);
+        }
+    }
+
+    public void addAnimations(List<Animation> animations){
+        this.newAnimations = new Animation[animations.size()];
+        for(int i=0; i<animations.size(); i++){
+            newAnimations[i] = animations.get(i);
         }
     }
 
@@ -106,6 +132,15 @@ public class ClientFrameEvent extends FrameEvent {
                 newH.put(hJSON);
             }
             json.put("newHits", newH);
+        }
+
+        if(newAnimations != null && newAnimations.length > 0){
+            JSONArray newA= new JSONArray();
+            for(Animation a: newAnimations){
+                JSONObject aJSON = convertAnimationToJSON(a);
+                newA.put(aJSON);
+            }
+            json.put("newAnimations", newA);
         }
 
         return json;

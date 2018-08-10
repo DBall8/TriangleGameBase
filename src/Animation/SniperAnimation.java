@@ -19,6 +19,8 @@ public class SniperAnimation extends Animation {
     public SniperAnimation(Player p) {
         super(javafx.animation.Animation.INDEFINITE);
 
+        type = Type.SniperAnimation;
+
         shotLine = new Rectangle(STARTWIDTH, LENGTH);
         shotLine.setFill(p.getColor());
         shotLine.setTranslateX((Player.WIDTH/2) - (shotLine.getWidth()/2));

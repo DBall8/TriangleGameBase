@@ -18,6 +18,13 @@ public abstract class Animation extends Group {
 
     protected EventHandler<ActionEvent> eventHandler;
 
+    protected Type type;
+
+    public enum Type{
+        HitAnimation,
+        SniperAnimation
+    }
+
     public Animation(int time){
         super();
         timeline = new Timeline();
@@ -59,4 +66,6 @@ public abstract class Animation extends Group {
         timeline.stop();
         g.getChildren().remove(this);
     }
+
+    public Type getType(){ return type; }
 }

@@ -58,6 +58,7 @@ public class Player extends Entity implements ICollidable {
     private boolean moveDisabled = false;
 
     private List<Projectile> newShots = new ArrayList<>(); // all new shots that the server has not been made aware of
+    private List<Animation> newAnimations = new ArrayList<>(); // all new animations that the server has not been made aware of
 
     private PlayerUI hud; // The UI for this player
     private int health = MAXHEALTH; // the health points of the player
@@ -285,6 +286,11 @@ public class Player extends Entity implements ICollidable {
     }
 
     public void addAnimation(Animation a, boolean attachedToPlayer){
+
+        if(a.getType() == Animation.Type.SniperAnimation){
+            newAnimations.add(a);
+        }
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -298,15 +304,15 @@ public class Player extends Entity implements ICollidable {
         });
     }
 
-    public Group getBodyGroup(){ return bodyGroup; }
-
     public void addNewShot(Projectile p){
         this.newShots.add(p);
     }
 
     public List<Projectile> getNewShots(){ return newShots; }
+    public List<Animation> getNewAnimations(){ return newAnimations; }
 
     public void clearNewShots(){ newShots.clear(); }
+    public void clearNewAnimations(){ newShots.clear(); }
 
     public void disableMovement(){ moveDisabled = true; }
     public void enableMovement(){ moveDisabled = false; }

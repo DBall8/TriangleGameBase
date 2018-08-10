@@ -4,6 +4,8 @@ import Events.HitEvent;
 import Objects.Entities.Projectiles.BasicShot;
 import Objects.Entities.Projectiles.HitScan;
 import Objects.Entities.Projectiles.Projectile;
+import Animation.Animation;
+import Animation.HitAnimation;
 import org.json.JSONObject;
 
 public abstract class FrameEvent {
@@ -73,6 +75,16 @@ public abstract class FrameEvent {
 
         return new HitEvent(playerID, x, y, damage);
 
+    }
+
+    protected JSONObject convertAnimationToJSON(Animation a){
+        JSONObject json = new JSONObject();
+
+        return json;
+    }
+
+    protected Animation convertJSONtoAnimation(JSONObject json){
+        return new HitAnimation(100, 100);
     }
 
 }

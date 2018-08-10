@@ -17,7 +17,6 @@ public class ServerFrameEvent extends FrameEvent {
 
     private JSONObject json; // server's status as a json
     private ClientFrameEvent[] clientFrames; // an array of each player's status
-    private Projectile[] newProjectiles;
     private List<String> disconnectedIDs = new ArrayList<>();
 
     /**

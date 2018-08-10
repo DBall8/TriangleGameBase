@@ -14,6 +14,8 @@ public class HitAnimation extends Animation {
     public HitAnimation(int x, int y) {
         super(DURATION);
 
+        type = Type.HitAnimation;
+
         circle = new Circle(5);
         circle.setTranslateX(x);
         circle.setTranslateY(y);
