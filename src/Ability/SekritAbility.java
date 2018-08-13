@@ -21,7 +21,7 @@ public class SekritAbility extends Ability {
     @Override
     public boolean use(){
         if(!onCooldown && isPressed()){
-            feHandler.handle(new FireEvent(new BasicShot(p), "sekrit"));
+            feHandler.handle(new FireEvent(new BasicShot(p)));
             goOnCooldown();
             return true;
         }

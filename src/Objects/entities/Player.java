@@ -2,6 +2,7 @@ package objects.entities;
 
 import ability.*;
 import animation.Animation;
+import animation.InvisibleAnimation;
 import animation.SniperAnimation;
 import events.EventHandler;
 import events.FireEvent;
@@ -59,6 +60,7 @@ public class Player extends Entity implements ICollidable {
     private SniperAnimation sniperAnimation;
 
     private boolean moveDisabled = false;
+    private boolean turnSlowed = false;
 
     private List<Projectile> newShots = new ArrayList<>(); // all new shots that the server has not been made aware of
     private List<Animation> newAnimations = new ArrayList<>(); // all new animations that the server has not been made aware of
@@ -66,6 +68,8 @@ public class Player extends Entity implements ICollidable {
     private PlayerUI hud; // The UI for this player
     private int health = MAXHEALTH; // the health points of the player
     private Color color; // the color of the player
+
+    private boolean isInvisible = false;
 
     private int spawnx, spawny;
     private float spawnAngle;
@@ -110,7 +114,8 @@ public class Player extends Entity implements ICollidable {
         input = Settings.initializeUserInput(scene);
         primaryFire = new PrimaryFire(this, feHandler);
         boost = new Boost(this);
-        ability1 = new Sniper(this, feHandler);
+        ability1 = new SniperAbility(this, feHandler);
+        ability2 = new Cloak(this);
         sekrit = new SekritAbility(this, feHandler);
     }
 
@@ -152,7 +157,10 @@ public class Player extends Entity implements ICollidable {
 
         // Change in angle
         float dAngle = 0;
-        if (input.isPressed(Binding.AIM)) {
+        if(input.isPressed(Binding.AIM) && turnSlowed){
+            dAngle = AIMRACCEL/2;
+        }
+        else if (input.isPressed(Binding.AIM) || turnSlowed) {
             dAngle = AIMRACCEL;
         } else if(boosting){
             dAngle = BOOSTRACCEL;
@@ -182,13 +190,11 @@ public class Player extends Entity implements ICollidable {
         if(distFromMouse > getYRadius() * 1.5) {
         */
         // Move forward if forward key is pressed and not at max speed, also accounting for boosting
-        if ((input.isPressed(Binding.UP) || boosting) && !moveDisabled) {
-            if (velocity < MAXSPEED) {
-                velocity += ACCEL;
-            } else if (boosting && velocity < MAXBOOSTSPEED) {
-                velocity += ACCEL;
-            }
-
+        if (input.isPressed(Binding.UP) && velocity < MAXSPEED && !moveDisabled) {
+            velocity += ACCEL;
+        }
+        else if(boosting && velocity < MAXBOOSTSPEED && !moveDisabled){
+            velocity += 1.5*ACCEL;
         }
         // Move backward if the back key is pressed
         if (input.isPressed(Binding.DOWN) && velocity > -MAXSPEED/2 && !moveDisabled) {
@@ -202,9 +208,14 @@ public class Player extends Entity implements ICollidable {
         yvel = Physics.yComponent(velocity, angleRads);
 
         // attempt to use all abilities
-        primaryFire.use();
-        ability1.use();
-        sekrit.use();
+        // TODO fix this logic
+        boolean invisInterrupted = isInvisible;
+        invisInterrupted |= !primaryFire.use();
+        invisInterrupted |= !ability1.use();
+        invisInterrupted |= !ability2.use();
+        invisInterrupted |= !sekrit.use();
+
+        if(!invisInterrupted) stopInvisibility();
 
     }
 
@@ -290,9 +301,13 @@ public class Player extends Entity implements ICollidable {
 
     public void addAnimation(Animation a, boolean attachedToPlayer){
 
-        if(a.getType() == Animation.Type.SniperAnimation){
-            sniperAnimation = (SniperAnimation)a;
-            newAnimations.add(a);
+        newAnimations.add(a);
+
+        switch(a.getType()){
+            case SniperAnimation:
+                sniperAnimation = (SniperAnimation)a;
+                break;
+            case HitAnimation: default:
         }
 
         Platform.runLater(new Runnable() {
@@ -309,6 +324,7 @@ public class Player extends Entity implements ICollidable {
     }
 
     public void stopSniperAnimation(){
+        if(sniperAnimation == null) return;
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -317,6 +333,13 @@ public class Player extends Entity implements ICollidable {
         });
 
     }
+
+    private void stopInvisibility(){
+        isInvisible = false;
+        addAnimation(new InvisibleAnimation(this, false), true);
+    }
+
+    public void setInvisile(boolean invisible){ isInvisible = invisible; }
 
     public void addNewShot(Projectile p){
         this.newShots.add(p);
@@ -330,6 +353,9 @@ public class Player extends Entity implements ICollidable {
 
     public void disableMovement(){ moveDisabled = true; }
     public void enableMovement(){ moveDisabled = false; }
+
+    public void slowTurning(){ turnSlowed = true; }
+    public void unslowTurning(){ turnSlowed = false; }
 
     // Getters
 

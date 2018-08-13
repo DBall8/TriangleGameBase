@@ -30,7 +30,9 @@ public abstract class Projectile extends Entity {
 
     public enum Type{
         BasicShot,
-        HitScan
+        HitScan,
+        Rocket,
+        Explosion
     }
 
     /**
@@ -87,7 +89,7 @@ public abstract class Projectile extends Entity {
                         hitEventHandler.handle(new HitEvent(p.getID(), (int)xpos, (int)ypos, damage ));
                     }
                 }
-                p.addAnimation(new HitAnimation((int)xpos, (int)ypos), false);
+                p.addAnimation(new HitAnimation((int)xpos, (int)ypos, damage), false);
                 alive = false;
             }
         }

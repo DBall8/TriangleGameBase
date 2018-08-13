@@ -116,7 +116,7 @@ public class HitScan extends Projectile {
                         hitEventHandler.handle(new HitEvent(p.getID(), (int) xpos, (int) ypos, damage));
                     }
                 }
-                p.addAnimation(new HitAnimation(Player.WIDTH/2, Player.HEIGHT/2), true);
+                p.addAnimation(new HitAnimation(Player.WIDTH/2, Player.HEIGHT/2, damage), true);
                 active = false;
             }
         }

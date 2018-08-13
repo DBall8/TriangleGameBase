@@ -11,7 +11,7 @@ public class BasicShot extends Projectile {
 
     private final static int WIDTH = 10;
     private final static int HEIGHT = 30;
-    private final static float PVELOCITY = 10; // the base velocity of a projectile
+    private final static float PVELOCITY = 15; // the base velocity of a projectile
     private final static float MOVEFACTOR = 0.9f; // the percentage of the player's speed to add to the projectile speed
 
     private Rectangle body;
@@ -33,7 +33,7 @@ public class BasicShot extends Projectile {
         else{
             pvel = PVELOCITY;
         }
-        this.angle = p.getAngle();
+
         this.xvel = Physics.xComponent(pvel, Physics.toRadiians(angle));
         this.yvel = Physics.yComponent(pvel, Physics.toRadiians(angle));
 

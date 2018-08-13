@@ -54,7 +54,7 @@ public class PrimaryFire extends Ability {
             }, (int)FIRERATE);
 
             // fire the shot
-            feHandler.handle(new FireEvent(new BasicShot(p), "shot"));
+            feHandler.handle(new FireEvent(new BasicShot(p)));
             return true;
         }
 

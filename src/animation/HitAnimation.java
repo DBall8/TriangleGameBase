@@ -7,10 +7,16 @@ import javafx.scene.shape.Circle;
 
 public class HitAnimation extends Animation {
 
+    private final static int STARTRADIUS = 5;
+    private static int ENDRADIUSBASE = 20;
     private final static int DURATION = 200; // ms
+
+    private static float DELTA;
+
+    private float endRadius = 10;
     Circle circle;
 
-    public HitAnimation(int x, int y) {
+    public HitAnimation(int x, int y, int sizeFactor) {
         super(DURATION);
 
         type = Type.HitAnimation;
@@ -22,10 +28,16 @@ public class HitAnimation extends Animation {
 
         getChildren().add(circle);
 
+        endRadius = ENDRADIUSBASE * sizeFactor;
+        DELTA  = (endRadius - STARTRADIUS) / cycleCount;
+
         super.setFrameEvent(new EventHandler() {
             @Override
             public void handle(Event event) {
-                circle.setRadius(circle.getRadius() + 1);
+                double radius = circle.getRadius();
+                if(radius < endRadius) {
+                    circle.setRadius(radius + DELTA);
+                }
             }
         });
 

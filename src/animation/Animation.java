@@ -12,24 +12,29 @@ public abstract class Animation extends Group {
     final static float RESOLUTION = 1000 / 30; // 30 Frames per second
 
     private Timeline timeline;
-    private Group g;
+    protected Group g;
 
     protected int cycleCount;
 
     protected EventHandler<ActionEvent> eventHandler;
+    protected EventHandler<ActionEvent> finishedEventHandler;
 
     protected Type type;
     protected String ownerID;
 
     public enum Type{
         HitAnimation,
-        SniperAnimation
+        SniperAnimation,
+        Invisibilty
     }
 
-    public Animation(int time){
+    public Animation(int time){ // time in ms
         super();
         timeline = new Timeline();
-        if(time != javafx.animation.Animation.INDEFINITE) {
+        if(time == 0){
+            cycleCount = 1;
+        }
+        else if(time != javafx.animation.Animation.INDEFINITE) {
             cycleCount = (int) (time / RESOLUTION);
         }
         else{
@@ -41,6 +46,7 @@ public abstract class Animation extends Group {
     protected void setFrameEvent(EventHandler<ActionEvent> eventHandler){
         this.eventHandler = eventHandler;
     }
+
 
     public void start(Group g){
 
@@ -54,17 +60,26 @@ public abstract class Animation extends Group {
         timeline.getKeyFrames().add(keyFrame);
 
         Animation a = this;
+
         timeline.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                if(finishedEventHandler != null){
+                    finishedEventHandler.handle(event);
+                }
                 g.getChildren().remove(a);
             }
         });
+
+
         timeline.play();
     }
 
     public void stop(){
         timeline.stop();
+        if(finishedEventHandler != null){
+            finishedEventHandler.handle(new ActionEvent());
+        }
         g.getChildren().remove(this);
     }
 

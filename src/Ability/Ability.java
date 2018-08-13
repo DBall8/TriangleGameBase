@@ -40,6 +40,7 @@ public abstract class Ability {
     protected void goOnCooldown(){
         onCooldown = true;
         // come off of cooldown after a little time
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {

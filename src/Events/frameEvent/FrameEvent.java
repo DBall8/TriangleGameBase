@@ -1,10 +1,9 @@
 package events.frameEvent;
 
+import animation.InvisibleAnimation;
 import animation.SniperAnimation;
 import events.HitEvent;
-import objects.entities.projectiles.BasicShot;
-import objects.entities.projectiles.HitScan;
-import objects.entities.projectiles.Projectile;
+import objects.entities.projectiles.*;
 import animation.Animation;
 import animation.HitAnimation;
 import org.json.JSONObject;
@@ -19,36 +18,47 @@ public abstract class FrameEvent {
         json.put("type", p.getType());
         json.put("X", p.getX());
         json.put("Y", p.getY());
-        json.put("angle", p.getAngle());
 
         switch (p.getType()){
-            case HitScan:
+            case Explosion:
                 break;
+            case Rocket:
             case BasicShot: default:
                 json.put("xvel", p.getXVel());
                 json.put("yvel", p.getYVel());
+            case HitScan:
+                json.put("angle", p.getAngle());
                 break;
+
         }
         return json;
     }
 
     protected Projectile convertJSONtoProjectile(JSONObject json, String ownerID){
         String ID;
-        float x, y, angle;
+        float x, y, angle, xvel, yvel;
         Projectile.Type type;
 
         ID = json.getString("ID");
         type = json.getEnum(Projectile.Type.class, "type");
         x = json.getFloat("X");
         y = json.getFloat("Y");
-        angle = json.getFloat("angle");
 
         switch(type){
+            case Explosion:
+                return new Explosion(ID, ownerID, x, y);
             case HitScan:
+                angle = json.getFloat("angle");
                 return new HitScan(ID, ownerID, x, y, angle);
+            case Rocket:
+                angle = json.getFloat("angle");
+                xvel = json.getFloat("xvel");
+                yvel = json.getFloat("yvel");
+                return new Rocket(ID, ownerID, x, y, xvel, yvel, angle);
             case BasicShot: default:
-                float xvel = json.getFloat("xvel");
-                float yvel = json.getFloat("yvel");
+                angle = json.getFloat("angle");
+                xvel = json.getFloat("xvel");
+                yvel = json.getFloat("yvel");
                 return new BasicShot(ID, ownerID, x, y, xvel, yvel, angle);
         }
 
@@ -82,6 +92,8 @@ public abstract class FrameEvent {
         JSONObject json = new JSONObject();
         json.put("type", a.getType());
         switch(a.getType()){
+            case Invisibilty:
+                json.put("cloak", ((InvisibleAnimation)a).isCloaking());
             case SniperAnimation:
                 json.put("ownerID", a.getOwnerID());
                 break;
@@ -96,8 +108,10 @@ public abstract class FrameEvent {
         switch (type){
             case SniperAnimation:
                 return new SniperAnimation(json.getString("ownerID"));
+            case Invisibilty:
+                return new InvisibleAnimation(json.getString("ownerID"), json.getBoolean("cloak"));
             default:
-                return new HitAnimation(100, 100);
+                return new HitAnimation(100, 100, 1);
         }
     }
 

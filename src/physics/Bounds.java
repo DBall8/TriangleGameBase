@@ -13,18 +13,14 @@ public class Bounds {
     }
 
     public boolean intersects(Bounds bounds){
-        return bounds.pointIsInside(x, y) ||
-                bounds.pointIsInside(x + width, y) ||
-                bounds.pointIsInside(x, y + height) ||
-                bounds.pointIsInside(x + width, y + height) ||
-                pointIsInside(bounds.x, bounds.y);
-    }
-
-    private boolean pointIsInside(float px, float py){
-        boolean insideX = x <= px && px <= x + width;
-        boolean insideY = y <= py && py <= y + height;
-
-        return  insideX && insideY;
+        if( // If the bounds are so far they couldnt possible intersect, return false;
+                x + width < bounds.x || bounds.x + bounds.width < x ||
+                y + height < bounds.y || bounds.y + bounds.height < y
+            ){
+            return false;
+        }
+        return true;
+        //return  boundsInside(bounds) || bounds.boundsInside(this);
     }
 
     public void updatePosition(float x, float y){
