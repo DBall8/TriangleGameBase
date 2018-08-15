@@ -14,8 +14,8 @@ public class SniperAbility extends Ability {
     private boolean isHeld = false;
     SniperAnimation animation;
 
-    public SniperAbility(Player p, EventHandler<FireEvent> feHandler) {
-        super(p, UserInputHandler.Binding.ABILITY1);
+    public SniperAbility(Player p, EventHandler<FireEvent> feHandler, UserInputHandler.Binding binding) {
+        super(p, binding);
 
         cooldown = 5.0f;
         this.feHandler = feHandler;
@@ -31,6 +31,7 @@ public class SniperAbility extends Ability {
                 isHeld = true;
                 animation = new SniperAnimation(p);
                 p.addAnimation(animation, true);
+                return true;
             } else if(!isPressed() && isHeld){
                 feHandler.handle(new FireEvent(new HitScan(p)));
                 goOnCooldown();
@@ -40,6 +41,7 @@ public class SniperAbility extends Ability {
                 p.unslowTurning();
                 return true;
             }
+
 
         }
         return false;

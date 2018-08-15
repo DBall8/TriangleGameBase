@@ -55,7 +55,7 @@ public class Player extends Entity implements ICollidable {
     private Boost boost;
     private Ability ability1;
     private Ability ability2;
-    private Ability sekrit;
+    private Ability ability3;
 
     private SniperAnimation sniperAnimation;
 
@@ -114,9 +114,10 @@ public class Player extends Entity implements ICollidable {
         input = Settings.initializeUserInput(scene);
         primaryFire = new PrimaryFire(this, feHandler);
         boost = new Boost(this);
-        ability1 = new SniperAbility(this, feHandler);
-        ability2 = new Cloak(this);
-        sekrit = new SekritAbility(this, feHandler);
+        ability1 = new SniperAbility(this, feHandler, Binding.ABILITY1);
+        ability2 = new RocketAbility(this, feHandler, Binding.ABILITY2);
+        ability3 = new Cloak(this, Binding.SEKRIT);
+        //sekrit = new SekritAbility(this, feHandler);
     }
 
     /**
@@ -210,12 +211,15 @@ public class Player extends Entity implements ICollidable {
         // attempt to use all abilities
         // TODO fix this logic
         boolean invisInterrupted = isInvisible;
-        invisInterrupted |= !primaryFire.use();
-        invisInterrupted |= !ability1.use();
-        invisInterrupted |= !ability2.use();
-        invisInterrupted |= !sekrit.use();
+        boolean abilityUsed = false;
 
-        if(!invisInterrupted) stopInvisibility();
+        abilityUsed |= primaryFire.use();
+        abilityUsed |= ability1.use();
+        abilityUsed |= ability2.use();
+        abilityUsed |= ability3.use();
+        //invisInterrupted &= !sekrit.use();
+
+        if(abilityUsed && invisInterrupted) stopInvisibility();
 
     }
 
@@ -336,6 +340,12 @@ public class Player extends Entity implements ICollidable {
 
     private void stopInvisibility(){
         isInvisible = false;
+        if(ability1 instanceof Cloak){
+            ((Cloak) ability1).endEarly();
+        }
+        else if(ability2 instanceof  Cloak){
+            ((Cloak) ability2).endEarly();
+        }
         addAnimation(new InvisibleAnimation(this, false), true);
     }
 

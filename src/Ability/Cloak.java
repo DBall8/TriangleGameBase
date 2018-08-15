@@ -17,8 +17,8 @@ public class Cloak extends Ability {
     private Timer durationTimer;
 
 
-    public Cloak(Player p) {
-        super(p, UserInputHandler.Binding.ABILITY2);
+    public Cloak(Player p, UserInputHandler.Binding binding) {
+        super(p, binding);
 
         cooldown = COOLDOWN;
     }

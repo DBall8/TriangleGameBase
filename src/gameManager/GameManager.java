@@ -91,7 +91,7 @@ public class GameManager extends Pane {
             addPlayer(p1);
         }
         // set up map
-        GameMap.buildMap("Cross");
+        GameMap.buildMap("Big");
         for(Obstacle o: GameMap.getObstacles()){
             addObstacle(o);
         }

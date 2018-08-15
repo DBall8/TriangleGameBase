@@ -13,8 +13,8 @@ public class RocketAbility extends Ability {
 
     private EventHandler<FireEvent> feHandler; // an object for sending successful firing events to
 
-    public RocketAbility(Player p, EventHandler<FireEvent> feHandler) {
-        super(p, UserInputHandler.Binding.ABILITY2);
+    public RocketAbility(Player p, EventHandler<FireEvent> feHandler, UserInputHandler.Binding binding) {
+        super(p, binding);
         this.feHandler = feHandler;
 
         this.cooldown = COOLDOWN;

@@ -15,11 +15,11 @@ public class Settings {
     public final static boolean BOUNCE = false; // whether or not collisions cause bouncing
 
     // Screen dimenions
-    private static int WIDTH = 800;
-    private static int HEIGHT = 800;
+    private static int WIDTH = 1800;
+    private static int HEIGHT = 1000;
 
     // If true, shows debug output
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
 
     private static boolean isClient = true;
 
